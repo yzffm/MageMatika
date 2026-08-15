@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Checkpoint: Batik Pragak — MageMatika</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background: #0a0e1a;
+      color: #f1f5f9;
+      overflow: hidden;
+    }
+
+    /* Loading overlay */
+    #loading-overlay {
+      position: fixed; inset: 0;
+      background: #0a0e1a;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.5s ease;
+    }
+    #loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .loading-spinner {
+      width: 48px; height: 48px;
+      border: 3px solid rgba(56, 189, 248, 0.2);
+      border-top-color: #38bdf8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #94a3b8;
+    }
+
+    /* Scan prompt */
+    #scan-prompt {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 16px;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(10,14,26,0.85) 0%, transparent 100%);
+      z-index: 50;
+      transition: opacity 0.3s ease;
+    }
+    #scan-prompt.hidden { opacity: 0; pointer-events: none; }
+    .scan-title {
+      font-size: 16px; font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .scan-subtitle {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    /* Quiz panel */
+    #quiz-panel {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(30, 41, 59, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(148, 163, 184, 0.12);
+      padding: 20px 16px;
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+      z-index: 999;
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #quiz-panel.visible {
+      transform: translateY(0);
+    }
+
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .quiz-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      background: rgba(56, 189, 248, 0.12);
+      color: #38bdf8;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .quiz-shape-info {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    #quiz-question {
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .quiz-dimensions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .dim-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      background: rgba(148, 163, 184, 0.08);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 8px;
+      font-size: 13px;
+      color: #cbd5e1;
+    }
+    .dim-chip strong {
+      color: #38bdf8;
+    }
+
+    .quiz-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    #answer-input {
+      flex: 1;
+      padding: 12px 16px;
+      font-size: 16px;
+      font-family: inherit;
+      color: #f1f5f9;
+      background: #111827;
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 12px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    #answer-input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+    #answer-input::placeholder { color: #64748b; }
+
+    #submit-btn {
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      color: #0f172a;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      white-space: nowrap;
+    }
+    #submit-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3); }
+    #submit-btn:active { transform: translateY(0); }
+    #submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #quiz-feedback {
+      margin-top: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+      display: none;
+    }
+    #quiz-feedback.correct {
+      display: block;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: #34d399;
+    }
+    #quiz-feedback.incorrect {
+      display: block;
+      background: rgba(248, 113, 113, 0.12);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      color: #f87171;
+    }
+
+    /* Back button */
+    #back-btn {
+      position: fixed;
+      top: 16px; left: 16px;
+      z-index: 100;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 12px;
+      color: #f1f5f9;
+      font-size: 20px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    #back-btn:hover { background: rgba(30, 41, 59, 1); }
+  </style>
+</head>
+<body>
+  <!-- Loading overlay -->
+  <div id="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Memuat kamera AR…</p>
+  </div>
+
+  <!-- Back button -->
+  <a id="back-btn" href="/" title="Kembali">←</a>
+
+  <!-- Scan prompt -->
+  <div id="scan-prompt">
+    <p class="scan-title">📷 Arahkan kamera ke Batik Pragak</p>
+    <p class="scan-subtitle">Pastikan objek terlihat jelas dan pencahayaan cukup</p>
+  </div>
+
+  <!-- A-Frame AR Scene -->
+  <a-scene
+    mindar-image="imageTargetSrc: /ar/targets/pragak.mind; autoStart: true;"
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+  >
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <a-entity id="target" mindar-image-target="targetIndex: 0"></a-entity>
+  </a-scene>
+
+  <!-- Quiz panel -->
+  <div id="quiz-panel">
+    <div class="quiz-header">
+      <span class="quiz-badge" id="quiz-badge"></span>
+      <span class="quiz-shape-info" id="quiz-shape-info"></span>
+    </div>
+    <p id="quiz-question"></p>
+    <div class="quiz-dimensions" id="quiz-dimensions"></div>
+    <div class="quiz-input-row">
+      <input type="number" id="answer-input" placeholder="Jawabanmu" inputmode="decimal" step="any" />
+      <button id="submit-btn">Jawab</button>
+    </div>
+    <div id="quiz-feedback"></div>
+  </div>
+
+  <script>
+    // === KONFIGURASI ===
+    const CHECKPOINT_ID = 'pragak'
+    const SUPABASE_URL = 'https://wkxrpepjbijewctmucyz.supabase.co'
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndreHJwZXBqYmlqZXdjdG11Y3l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1MzEyNTksImV4cCI6MjEwMjEwNzI1OX0.UrI18nB0dx0mKo640VL5DxK-idSgLw5CYAYdG2vVPXc'
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+    let checkpointData = null
+    let hasSubmittedCorrect = false
+
+    // === FETCH DATA ===
+    fetch('/data/locations.json')
+      .then(res => res.json())
+      .then(all => {
+        checkpointData = all.find(item => item.id === CHECKPOINT_ID)
+        if (!checkpointData) {
+          console.error('[MageMatika] Checkpoint tidak ditemukan di locations.json:', CHECKPOINT_ID)
+          return
+        }
+        renderOverlay(checkpointData)
+        setupQuiz(checkpointData)
+      })
+      .catch(err => console.error('[MageMatika] Gagal load locations.json:', err))
+
+    // === RENDER OVERLAY A-Frame ===
+    function renderOverlay(data) {
+      const target = document.querySelector('#target')
+
+      if (data.shapeType === 'triangle') {
+        const alas = data.dimensions.alas / 100
+        const tinggi = data.dimensions.tinggi / 100
+        const tri = document.createElement('a-triangle')
+        tri.setAttribute('vertex-a', `${-alas/2} ${-tinggi/2} 0`)
+        tri.setAttribute('vertex-b', `${alas/2} ${-tinggi/2} 0`)
+        tri.setAttribute('vertex-c', `0 ${tinggi/2} 0`)
+        tri.setAttribute('material', 'color: #38bdf8; opacity: 0.5; side: double')
+        target.appendChild(tri)
+      }
+    }
+
+    // === SETUP QUIZ ===
+    function setupQuiz(data) {
+      document.querySelector('#quiz-badge').textContent = data.materiMatematika
+      document.querySelector('#quiz-shape-info').textContent = data.name
+      document.querySelector('#quiz-question').textContent =
+        `Hitung luas bagian yang ditandai. Rumus: ${data.formula}`
+
+      const dimContainer = document.querySelector('#quiz-dimensions')
+      const dims = data.dimensions
+      Object.entries(dims).forEach(([key, val]) => {
+        if (key === 'unit') return
+        const chip = document.createElement('div')
+        chip.className = 'dim-chip'
+        chip.innerHTML = `${key}: <strong>${val} ${dims.unit}</strong>`
+        dimContainer.appendChild(chip)
+      })
+    }
+
+    // === AR EVENTS ===
+    const sceneEl = document.querySelector('a-scene')
+
+    sceneEl.addEventListener('arReady', () => {
+      document.querySelector('#loading-overlay').classList.add('hidden')
+    })
+
+    sceneEl.addEventListener('arError', () => {
+      document.querySelector('#loading-overlay').innerHTML =
+        '<p style="color: #f87171; text-align: center; padding: 20px;">Gagal mengakses kamera.<br>Pastikan izin kamera diaktifkan.</p>'
+    })
+
+    document.querySelector('#target').addEventListener('targetFound', () => {
+      document.querySelector('#scan-prompt').classList.add('hidden')
+      document.querySelector('#quiz-panel').classList.add('visible')
+    })
+
+    // === SUBMIT JAWABAN ===
+    document.querySelector('#submit-btn').addEventListener('click', async () => {
+      if (!checkpointData || hasSubmittedCorrect) return
+
+      const input = document.querySelector('#answer-input')
+      const feedback = document.querySelector('#quiz-feedback')
+      const submitBtn = document.querySelector('#submit-btn')
+      const userAnswer = parseFloat(input.value)
+
+      if (isNaN(userAnswer)) {
+        feedback.className = 'incorrect'
+        feedback.style.display = 'block'
+        feedback.textContent = '⚠️ Masukkan angka yang valid.'
+        return
+      }
+
+      const tolerance = Math.abs(checkpointData.correctAnswer) * 0.01
+      const isCorrect = Math.abs(userAnswer - checkpointData.correctAnswer) <= Math.max(tolerance, 0.5)
+
+      if (isCorrect) {
+        feedback.className = 'correct'
+        feedback.style.display = 'block'
+        feedback.textContent = `✅ Benar! Jawabannya ${checkpointData.correctAnswer} ${checkpointData.answerUnit}`
+        hasSubmittedCorrect = true
+        submitBtn.disabled = true
+        submitBtn.textContent = '✓ Selesai'
+        await submitScore(checkpointData.id, 100)
+      } else {
+        feedback.className = 'incorrect'
+        feedback.style.display = 'block'
+        feedback.textContent = `❌ Belum tepat. Coba lagi!`
+        input.style.animation = 'none'
+        input.offsetHeight
+        input.style.animation = 'shake 0.4s ease'
+        input.value = ''
+        input.focus()
+      }
+    })
+
+    document.querySelector('#answer-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.querySelector('#submit-btn').click()
+    })
+
+    // === SUBMIT SKOR KE SUPABASE ===
+    async function submitScore(locationId, score) {
+      const studentName = sessionStorage.getItem('studentName') || 'Anonim'
+      const studentClass = sessionStorage.getItem('studentClass') || '-'
+
+      try {
+        const { error } = await supabaseClient.from('progress').insert({
+          student_name: studentName,
+          class: studentClass,
+          location_id: locationId,
+          checkpoint_score: score
+        })
+        if (error) console.error('[MageMatika] Supabase insert error:', error)
+        else console.log('[MageMatika] Skor berhasil disimpan!')
+      } catch (err) {
+        console.error('[MageMatika] Network error:', err)
+      }
+    }
+  </script>
+
+  <style>
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+  </style>
+</body>
+</html>

@@ -1,20 +1,72 @@
-import { useParams, Link } from 'react-router-dom'
-import { ChevronLeft } from 'lucide-react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { ChevronLeft, MapPin, BookOpen, GraduationCap } from 'lucide-react'
+import { useLocations } from '../hooks/useLocations'
+import './KecamatanPage.css'
 
 export default function KecamatanPage() {
   const { kecamatanId } = useParams()
+  const navigate = useNavigate()
+  const { locations, loading } = useLocations()
+
+  if (loading) {
+    return (
+      <div className="page-container kecamatan-page">
+        <div className="kecamatan-loading">
+          <div className="loading-spinner" />
+          <p>Memuat destinasi...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const destinasiList = locations.filter(l => l.kecamatanId === kecamatanId)
+  // Kalau destinasi ada, ambil nama dari data, kalau tidak capitalize ID-nya
+  const kecamatanName = destinasiList.length > 0 
+    ? destinasiList[0].kecamatanName 
+    : kecamatanId.charAt(0).toUpperCase() + kecamatanId.slice(1)
 
   return (
-    <div className="page-container animate-fade-in-up" style={{ gap: '1rem' }}>
-      <Link to="/peta" className="btn btn-ghost" style={{ alignSelf: 'flex-start' }}>
-        <ChevronLeft size={18} /> Kembali ke Peta
-      </Link>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-2xl)' }}>
-        Kecamatan: {kecamatanId}
-      </h1>
-      <p style={{ color: 'var(--color-text-secondary)' }}>
-        Daftar destinasi ethnomathematics di kecamatan ini akan ditampilkan di sini.
-      </p>
+    <div className="page-container kecamatan-page">
+      <header className="kecamatan-header animate-fade-in-up">
+        <button className="btn btn-ghost" onClick={() => navigate('/peta')}>
+          <ChevronLeft size={18} /> Peta
+        </button>
+        <div>
+          <h1 className="kecamatan-title">Kecamatan {kecamatanName}</h1>
+          <p className="kecamatan-subtitle">Pilih destinasi ethnomathematics</p>
+        </div>
+      </header>
+
+      <main className="destinasi-list animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+        {destinasiList.length === 0 ? (
+          <div className="glass-card empty-state">
+            <p>Belum ada destinasi aktif di kecamatan ini.</p>
+          </div>
+        ) : (
+          destinasiList.map(dest => (
+            <div 
+              key={dest.id} 
+              className="destinasi-card glass-card"
+              onClick={() => navigate(`/lokasi/${dest.id}`)}
+            >
+              <div className="destinasi-badges">
+                <span className="badge badge-primary">
+                  <BookOpen size={12} /> {dest.materiMatematika}
+                </span>
+                <span className="badge badge-secondary">
+                  <GraduationCap size={12} /> {dest.jenjang}
+                </span>
+              </div>
+              <h2 className="destinasi-name">{dest.name}</h2>
+              <p className="destinasi-desc">{dest.shortDescription}</p>
+              
+              <div className="destinasi-action">
+                <span className="btn-text">Lihat Detail →</span>
+              </div>
+            </div>
+          ))
+        )}
+      </main>
     </div>
   )
 }
