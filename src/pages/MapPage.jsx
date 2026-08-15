@@ -120,6 +120,26 @@ function inspectGeoJSON(data) {
 
 
 /**
+ * Fix arah winding ring supaya sesuai dengan yang diharapkan d3-geo.
+ *
+ * PENYEBAB BUG PETA:
+ * GeoJSON dari penyedia menggunakan winding order lama/legacy
+ * (exterior ring CCW pada bidang lng/lat). d3-geo (geoPath, geoCentroid, dll)
+ * mengharapkan arah sebaliknya (right-hand rule versi d3). Kalau kebalik,
+ * setiap polygon dibaca sebagai "seluruh bola dunia MINUS area ini",
+ * sehingga path/bounds yang dihasilkan meledak jadi nilai raksasa
+ * dan yang ke-render cuma outline tipis sisa kliping di tepi SVG.
+ *
+ * Reverse urutan titik tiap ring (exterior maupun hole) supaya arahnya
+ * konsisten dengan yang dibutuhkan d3-geo, tanpa perlu tahu ring mana
+ * yang exterior/hole (reverse seragam tetap menjaga orientasi relatif
+ * antar ring).
+ */
+function fixRingWinding(polygonCoordinates) {
+  return polygonCoordinates.map((ring) => [...ring].reverse())
+}
+
+/**
  * Menggabungkan semua desa menjadi 1 MultiPolygon
  * untuk setiap kecamatan.
  *
@@ -151,11 +171,13 @@ function buildKecamatanFeatures(data) {
     const geometry = feature.geometry
 
     if (geometry.type === 'Polygon') {
-      group.polygons.push(geometry.coordinates)
+      group.polygons.push(fixRingWinding(geometry.coordinates))
     }
 
     if (geometry.type === 'MultiPolygon') {
-      group.polygons.push(...geometry.coordinates)
+      for (const polygon of geometry.coordinates) {
+        group.polygons.push(fixRingWinding(polygon))
+      }
     }
   }
 
