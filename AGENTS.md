@@ -1,76 +1,78 @@
 # AGENTS.md — MageMatika Engineering Constitution
 
-> This file is the primary engineering and product instruction for AI coding agents working on MageMatika in Antigravity IDE.
-> Read this file before making architectural, UI, data, or dependency changes.
+> **Single source of truth for AI coding agents.** Read this file fully before changing code, UI, data, dependencies, routes, database schema, AR, or 3D features.
 >
-> **Project:** MageMatika
-> **Domain:** Ethnomathematics education using Magetan cultural context
-> **Primary target:** SD and SMP
-> **Future target:** SMA, only when content and time allow
-> **Deadline constraint:** 28 August 2026
-> **Current date context:** August 2026
+> **Project:** MageMatika  
+> **Domain:** Ethnomathematics education using Magetan cultural context  
+> **Primary learning scope:** SD + SMP  
+> **Future scope:** SMA when final content and time allow  
+> **Deadline:** 28 August 2026
 
 ---
 
 ## 0. NON-NEGOTIABLE RULES
 
-1. **Inspect the existing code before changing it.** Do not assume the repository matches a generic React/Vite starter.
-2. **Do not rewrite the application from scratch.** Extend/refactor the current codebase incrementally.
-3. **Preserve working features unless the task explicitly replaces them.** In particular, do not accidentally remove the existing Magetan map, cultural-location data, or legacy AR path while introducing the new architecture.
-4. **Do not invent cultural facts, historical claims, curriculum topics, formulas, or learning objectives.** If source material is missing or ambiguous, use a clearly marked placeholder and flag it.
-5. **Current SD/SMP/SMA content is provisional.** Use the material currently available in the repository/project as seed content only. Final curriculum and cultural content will be supplied later by the team and must be treated as the new source of truth when supplied.
-6. **Do not block the core learning experience behind physical location, GPS, QR, camera, or AR.** Real-world AR/location experiences are enrichment only.
-7. **AR and Interactive Mathematics have different responsibilities:**
-   - AR = cultural immersion.
-   - Interactive geometry/math = mathematical exploration.
-8. **Do not force every lesson into 3D.** Use 2D interaction for 2D concepts and R3F/Three.js for concepts that genuinely benefit from spatial manipulation.
-9. **Do not create custom 3D cultural models unless explicitly requested.** Prefer reusable mathematical primitives.
-10. **Do not add complex authentication.** Student onboarding is intentionally lightweight: name + jenjang + kelas. Supabase persistence can be added without introducing email/password authentication unless explicitly requested.
-11. **Do not fabricate SMA content.** SMA may exist as a future-ready state/placeholder only until final content is supplied.
-12. **Do not introduce large unrelated dependencies or architecture changes without justification.** Deadline and agent reliability matter more than theoretical completeness.
-13. **After meaningful changes, run lint/build and fix regressions before declaring the task complete.**
-14. **Keep the UI responsive and mobile-first**, especially AR and interactive mathematics.
-15. **When requirements conflict, this file and explicit user instructions take priority over assumptions.**
+1. Inspect the existing repository before changing it. Do not assume it is a fresh Vite starter.
+2. Do not rewrite the application from scratch. Refactor incrementally and preserve working behavior unless the task explicitly replaces it.
+3. Do not invent cultural facts, historical claims, curriculum alignment, formulas, learning objectives, measurements, or question answers. Missing information must use an explicit placeholder and be reported.
+4. Current curriculum/content is provisional. When the team supplies final SD/SMP/SMA material, that material becomes the source of truth.
+5. The core mathematical learning path must never require a physical location, GPS, QR, camera, or AR. These are enrichment mechanisms.
+6. AR and interactive mathematics have different jobs:
+   - **AR = cultural immersion/context.**
+   - **Interactive mathematics = mathematical abstraction and discovery.**
+7. Do not make every lesson 3D. Use 2D interaction when it communicates the concept better; use R3F/Three.js when spatial manipulation adds genuine educational value.
+8. Do not build photorealistic/custom 3D cultural objects unless explicitly requested. Prefer reusable mathematical primitives.
+9. Do not add email/password authentication. Student onboarding is intentionally lightweight: name + jenjang + kelas.
+10. SMA must remain future-ready but must not contain fabricated content.
+11. Do not introduce large unrelated dependencies or architectural rewrites without justification against the deadline.
+12. Keep the application mobile-first and responsive. The primary demo experience is on a phone.
+13. After meaningful implementation work, run the available lint/build/test checks and fix regressions before declaring the task complete.
+14. If a task requires human-only verification (especially physical AR/camera testing), implement what can be implemented, clearly state the manual step, and ask the user to perform it. Never falsely mark it verified.
+15. Explicit user instructions may supersede this document when they intentionally change product scope. When that happens, update this file rather than leaving contradictory rules behind.
 
 ---
 
 # 1. PRODUCT VISION
 
-MageMatika is not simply a quiz app containing cultural pictures.
+MageMatika is a web learning experience based on **ethnomathematics**: Magetan culture provides authentic context for learning mathematics.
 
-The intended learning experience is:
+MageMatika is **not** merely a cultural gallery with a quiz attached, and it is not merely a checkpoint game.
+
+The intended learning loop is:
 
 ```text
 CULTURE
-  ↓
+   ↓
 OBSERVE
-  ↓
+   ↓
 CULTURAL STORY
-  ↓
-FIND THE MATHEMATICS
-  ↓
+   ↓
+"DI MANA MATEMATIKANYA?"
+   ↓
 MATHEMATICAL ABSTRACTION
-  ↓
+   ↓
 INTERACTIVE EXPLORATION
-  ↓
+   ↓
 DISCOVERY
-  ↓
+   ↓
 CHALLENGE
-  ↓
+   ↓
 REWARD
-  ↓
+   ↓
 PROGRESS
 ```
 
-The ethnomathematics relationship must remain explicit:
+The core educational relationship is:
 
 > **Culture gives context. Mathematics explains patterns, shapes, measurements, and relationships. Interaction lets students discover those relationships.**
+
+Innovation should come primarily from this learning experience, not from adding technology for its own sake.
 
 ---
 
 # 2. FINAL UX / INFORMATION ARCHITECTURE
 
-The approved conceptual architecture is:
+The approved conceptual flow is:
 
 ```text
 LANDING
@@ -85,7 +87,13 @@ PERSONALIZED HOME
   ├── Missions
   ├── Progress
   └── Profile
+```
 
+## 2.1 Explore path
+
+```text
+HOME
+  ↓
 EXPLORE MAGETAN
   ↓
 MAP
@@ -97,27 +105,43 @@ CULTURAL OBJECT
 CULTURAL STORY
   ↓
 "DI MANA MATEMATIKANYA?"
-  ├───────────────┐
-  ↓               ↓
-AR EXPERIENCE   MATH EXPLORATION
-  ↓               ↓
-CULTURAL        MATHEMATICAL
-IMMERSION       ABSTRACTION
-  ↓               ↓
-  └───────┬───────┘
-          ↓
-INTERACTIVE MATHEMATICS
-          ↓
-DISCOVERY
-          ↓
-CHALLENGE
-          ↓
-REWARD
-          ↓
-PROGRESS
+  ├──────────────────────┐
+  ↓                      ↓
+AR EXPERIENCE       MATH EXPLORATION
+  ↓                      ↓
+CULTURAL             MATHEMATICAL
+IMMERSION            ABSTRACTION
+                         ↓
+                 INTERACTIVE MATH
+                         ↓
+                     DISCOVERY
+                         ↓
+                    CHALLENGE
+                         ↓
+                       REWARD
+                         ↓
+                      PROGRESS
 ```
 
-Direct mission path remains valid:
+AR is optional enrichment. A student must always be able to reach mathematical exploration without physically visiting the location or successfully starting AR.
+
+## 2.2 Mission path
+
+Math challenges are **not exclusive to the mission entry point**.
+
+There are two valid ways to reach a challenge:
+
+```text
+CULTURAL OBJECT
+  ↓
+MATH EXPLORATION
+  ↓
+DISCOVERY
+  ↓
+CHALLENGE
+```
+
+or:
 
 ```text
 HOME
@@ -127,11 +151,11 @@ MISSIONS
 LEVEL-AWARE MISSION LIBRARY
   ↓
 CHALLENGE
-  ↓
-REWARD
 ```
 
-Optional real-world enrichment:
+The mission system is therefore the practice/assessment layer, not the only place where mathematics exists.
+
+## 2.3 Optional real-world enrichment
 
 ```text
 PHYSICAL LOCATION
@@ -140,16 +164,16 @@ QR / LOCATION / AR
   ↓
 SPECIAL CULTURAL EXPERIENCE
   ↓
-BONUS MISSION / XP
+OPTIONAL BONUS / XP / MISSION
 ```
 
-The physical-location path is never the required path to mathematical learning.
+Never gate the main mathematics curriculum behind this path.
 
 ---
 
-# 3. STUDENT CONTEXT IS A FIRST-CLASS CONCEPT
+# 3. STUDENT CONTEXT AND PERSONALIZATION
 
-Student context is:
+Student identity is a first-class product concept:
 
 ```text
 Student
@@ -158,16 +182,14 @@ Student
 └── grade: 1..12
 ```
 
-The selected level is not decorative profile information. It is the primary content filter.
-
-Conceptually:
+The student's level is not decorative. It determines which learning modules and challenges are shown.
 
 ```text
 STUDENT
   ↓
 JENJANG + KELAS
   ↓
-AVAILABLE LEARNING MODULES
+AVAILABLE CONTENT
   ↓
 MATH TOPIC
   ↓
@@ -178,90 +200,78 @@ CHALLENGES
 PROGRESS
 ```
 
-### Current implementation priority
+Current priority:
 
-- SD: active priority
-- SMP: active priority
-- SMA: future-ready placeholder only
+- **SD:** active
+- **SMP:** active
+- **SMA:** future-ready placeholder only
 
-Do not require final per-class curriculum before the architecture works.
-
-Use `gradeRange`/equivalent metadata where useful, but do not create unnecessary duplicate lesson implementations for every class.
-
-A practical first grouping may be:
+Initial class ranges:
 
 ```text
-SD  → class 1–6
-SMP → class 7–9
-SMA → class 10–12 (future)
+SD  → 1–6
+SMP → 7–9
+SMA → 10–12 (future)
 ```
 
-Only split content more finely when the supplied final material actually requires it.
+Do not create unnecessary duplicate implementations for every class. Use `gradeRange` or equivalent metadata and only split content when final supplied material requires it.
 
 ---
 
-# 4. CURRICULUM CONTENT POLICY
+# 4. ONBOARDING UX
 
-## 4.1 Current material is provisional
+The onboarding form should remain simple and match the visual language approved through the design process.
 
-The current repository/project materials are a temporary implementation seed.
-
-The team will later provide the complete/final SD, SMP, and possibly SMA materials.
-
-When final material is supplied:
-
-1. Treat it as the authoritative content source.
-2. Preserve its terminology and organization unless the team explicitly requests a change.
-3. Map it into the data model instead of scattering lesson text throughout JSX.
-4. Remove or mark obsolete provisional content.
-5. Do not silently reconcile contradictory curriculum information using general knowledge.
-6. If two sources conflict, surface the conflict instead of guessing.
-
-## 4.2 No invented educational claims
-
-Agents must not invent:
-
-- curriculum alignment
-- grade-level claims
-- learning outcomes
-- cultural history
-- local traditions
-- formulas not supported by the provided lesson
-- cultural-to-mathematics mappings
-
-If a field is unknown, use a placeholder such as:
+Fields:
 
 ```text
-[Materi akan ditambahkan]
-[Deskripsi budaya akan ditambahkan]
-[Foto budaya akan ditambahkan]
+Nama Lengkap
+Jenjang
+Kelas
 ```
 
-and keep the schema ready for replacement.
+Class choices depend on jenjang.
+
+The current application already uses `sessionStorage` for student context. Evolve it carefully rather than introducing complex authentication.
+
+Conceptual session shape:
+
+```js
+{
+  studentName,
+  studentLevel,
+  studentClass
+}
+```
+
+Backward compatibility with existing `studentName` / `studentClass` keys may be retained during migration if existing AR pages still depend on them.
+
+Do not add email/password, OAuth, or a full account system unless explicitly requested.
 
 ---
 
-# 5. CONTENT MODEL PRINCIPLE
+# 5. GRADE-AWARE CONTENT ARCHITECTURE
 
-Never assume:
-
-```text
-1 culture = 1 lesson
-```
-
-Instead, model:
+Never model the product as:
 
 ```text
-Cultural Object
-  ├── Cultural Story
-  ├── AR Experience (optional)
-  └── Learning Modules
-        ├── SD module(s)
-        ├── SMP module(s)
-        └── SMA module(s) [future]
+1 cultural object = 1 lesson
 ```
 
-A learning module should conceptually support:
+Use:
+
+```text
+CULTURAL OBJECT
+├── Cultural Story
+├── Media / Photos
+├── AR Experience (optional)
+└── Learning Modules
+      ├── SD module(s)
+      ├── SMP module(s)
+      └── SMA module(s) [future]
+```
+
+A conceptual learning-module shape is:
 
 ```text
 LearningModule
@@ -281,157 +291,184 @@ LearningModule
 └── arExperienceId: optional
 ```
 
-The exact schema may differ during implementation, but the separation of cultural context from level-specific mathematical interpretation must remain.
+The exact implementation schema may evolve, but the separation between cultural context and level-specific mathematical interpretation is mandatory.
+
+One cultural object can therefore support different mathematical lessons for SD and SMP without duplicating the cultural object itself.
+
+Do not hardcode example mappings as final curriculum unless the supplied material explicitly supports them.
+
+---
+
+# 6. CURRICULUM AND CONTENT POLICY
+
+## 6.1 Provisional content
+
+The current repository/project material is seed content only.
+
+The team will provide final material for SD, SMP, and possibly SMA later.
+
+When final material arrives:
+
+1. Treat it as authoritative.
+2. Preserve its terminology, organization, and intended scope.
+3. Map it into data/content structures instead of scattering text across JSX.
+4. Replace or explicitly mark provisional content.
+5. Do not silently correct or reconcile conflicting source material using general knowledge.
+6. If two supplied sources conflict, surface the conflict to the user.
+
+## 6.2 Missing data
+
+Use explicit placeholders such as:
+
+```text
+[Materi akan ditambahkan]
+[Deskripsi budaya akan ditambahkan]
+[Foto budaya akan ditambahkan]
+[Ukuran asli akan ditambahkan]
+```
+
+Never invent:
+
+- cultural history
+- cultural ownership/origin claims
+- field measurements
+- curriculum claims
+- learning outcomes
+- formulas or answers not supported by the lesson source
+
+---
+
+# 7. CULTURAL EXPERIENCE + AR
+
+AR remains part of MageMatika. It is **not removed** by the new interactive-math architecture.
+
+Its role is:
+
+```text
+PHOTO / CULTURAL OBJECT
+       ↓
+      AR
+       ↓
+CULTURAL IMMERSION
+       ↓
+"THIS IS THE REAL OBJECT / CONTEXT"
+```
+
+Interactive mathematics has a different role:
+
+```text
+CULTURAL CONTEXT
+       ↓
+MATHEMATICAL ABSTRACTION
+       ↓
+MANIPULABLE GEOMETRY
+```
+
+The two experiences complement one another.
+
+## 7.1 Existing legacy AR
+
+The current repository contains a legacy AR integration where `LocationPage.jsx` can navigate to `dest.arCheckpointUrl`.
+
+Treat this as existing functionality during migration.
+
+Before replacing it:
+
+1. Inspect the current AR files and data.
+2. Determine which parts are reusable.
+3. Preserve working behavior until the replacement is verified.
+4. Remove obsolete code only after the replacement is functional.
+
+Do not silently delete the existing AR implementation.
+
+## 7.2 AR implementation principle
+
+The exact AR library is an implementation decision, not a permanent product requirement.
+
+If the existing A-Frame + MindAR implementation remains viable on the target Android devices, it can be retained/refactored.
+
+If a new approach is considered, compare:
+
+- Android Chrome support
+- camera permissions
+- marker/image-target reliability
+- bundle/runtime complexity
+- development time
+- physical-device testability
+
+Do not add a heavy AR stack merely because it is technically interesting.
+
+## 7.3 AR fallback
+
+AR must have a graceful fallback.
+
+Conceptually:
+
+```text
+AR INTRO
+  ↓
+CHECK AVAILABILITY
+  ├── available → AR EXPERIENCE
+  └── unavailable → 3D / VISUAL PREVIEW
+  ↓
+CULTURAL CONTEXT
+  ↓
+MATH EXPLORATION
+```
+
+The fallback must not trap the student on a camera error screen.
+
+---
+
+# 8. INTERACTIVE MATHEMATICS — CORE INNOVATION
+
+Interactive mathematics is a primary innovation of the project.
+
+The goal is not to create realistic 3D cultural assets.
+
+The goal is to let students manipulate mathematical representations derived from cultural context.
 
 Example:
 
 ```text
-PRING SEDAPUR
-
-SD
-→ basic geometry / pattern / area or perimeter, if supported by final material
-
-SMP
-→ transformation geometry or other supplied topic
-
-SMA
-→ future only when final material exists
+CULTURAL OBJECT
+      ↓
+SIMPLIFIED MATHEMATICAL REPRESENTATION
+      ↓
+SLIDER / ROTATION / MANIPULATION
+      ↓
+LIVE DIMENSIONS
+      ↓
+LIVE CALCULATION
+      ↓
+DISCOVERY
 ```
 
-Do not hardcode these example mappings as final curriculum unless supported by the final source material.
+For example, a cylindrical cultural form may be represented by a cylinder primitive so the student can change radius/height and observe volume changes.
+
+This is a **mathematical abstraction**, not a claim that the cultural object literally is a perfect cylinder.
 
 ---
 
-# 6. CURRENT REPOSITORY BASELINE
+# 9. REACT THREE FIBER / 3D ARCHITECTURE
 
-The repository is currently a Vite + React application using JavaScript/JSX.
+If R3F is used, treat it as a visualization layer driven by React/domain state.
 
-Current package baseline includes:
-
-- React 18
-- React Router DOM 6
-- Vite 5
-- Supabase JS
-- lucide-react
-- d3-geo
-
-Current package does **not yet include React Three Fiber / Three.js / Drei**. If interactive 3D is implemented, add the required dependencies deliberately and keep the integration isolated/reusable.
-
-Current high-level source structure includes:
+Mental model:
 
 ```text
-src/
-├── App.jsx
-├── main.jsx
-├── index.css
-├── assets/
-├── components/
-│   ├── FormSiswa.jsx
-│   ├── Layout.jsx
-│   └── Toast.jsx
-├── data/
-│   └── magetan-kecamatan.json
-├── hooks/
-│   ├── useLocations.js
-│   └── useToast.jsx
-├── lib/
-│   └── supabase.js
-└── pages/
-    ├── HomePage.jsx
-    ├── MapPage.jsx
-    ├── KecamatanPage.jsx
-    ├── LocationPage.jsx
-    └── NotFoundPage.jsx
+Math/domain state
+      ↓
+React state
+      ↓
+R3F <Canvas>
+      ↓
+mesh + geometry + material
+      ↓
+visual result
 ```
-
-The current application already has routes for `/`, `/peta`, `/kecamatan/:kecamatanId`, and `/lokasi/:locationId`.
-
-Do not delete these concepts merely because the new UX introduces additional routes.
-
----
-
-# 7. LEGACY AR MUST BE HANDLED CAREFULLY
-
-The current codebase already contains an AR-related path in `LocationPage.jsx` that redirects the browser to `dest.arCheckpointUrl`.
-
-This is existing functionality and must be treated as a legacy integration until the new AR architecture is implemented.
-
-Rules:
-
-1. Do not silently delete the existing AR path.
-2. Before replacing it, inspect how `arCheckpointUrl` is populated and whether the current AR experience is still usable.
-3. Introduce a clean AR abstraction rather than coupling pages directly to a URL.
-4. The new UX should support:
-   - AR introduction
-   - camera/AR state
-   - object detection/placement state
-   - cultural information
-   - completion
-   - transition to mathematical exploration
-   - graceful fallback when AR is unavailable
-5. If true device AR is not feasible within the deadline, provide a convincing progressive fallback using 3D/preview while preserving the same UX contract.
-6. Never make AR the only way to reach the math experience.
-
-A useful abstraction is conceptually:
-
-```text
-ARExperience
-├── intro
-├── availability detection
-├── experience implementation
-├── completion
-└── fallback
-```
-
-The exact AR library is an implementation decision. Evaluate browser/device support and deadline impact before adding a heavy stack.
-
----
-
-# 8. INTERACTIVE MATHEMATICS / R3F ARCHITECTURE
-
-Interactive mathematics is a core innovation of MageMatika.
-
-## 8.1 Do not build custom cultural 3D models
-
-Use mathematical primitives:
-
-- box / cuboid
-- plane / 2D shape
-- cylinder
-- cone
-- sphere
-- prism where needed
-
-A cultural object provides the context; the mathematical model is intentionally simplified.
 
 Example:
-
-```text
-Bamboo
-↓
-Cylinder
-```
-
-The goal is mathematical abstraction, not photorealistic reconstruction.
-
-## 8.2 React Three Fiber
-
-If R3F is used, understand the mental model:
-
-```text
-React component tree
-        ↓
-<Canvas>
-        ↓
-<mesh>
-  <geometry />
-  <material />
-</mesh>
-```
-
-React state controls mathematical parameters.
-
-For example:
 
 ```text
 radius state
@@ -439,35 +476,34 @@ height state
       ↓
 Cylinder geometry
       ↓
-volume calculation
+Volume calculation
       ↓
-UI values / challenge evaluation
+UI values + challenge evaluation
 ```
 
-The 3D scene must remain a presentation layer over deterministic math state.
-
-Do not put core mathematical formulas exclusively inside Three.js components.
+Core formulas and challenge logic must **not** live only inside a Three.js component.
 
 Prefer:
 
 ```text
 math/domain logic
-        ↓
+       ↓
 React state
-        ↓
-3D visualization
+       ↓
+visualization
 ```
 
-rather than:
+not:
 
 ```text
-3D component
-  └── owns all business logic
+3D component owns all business logic
 ```
 
-## 8.3 Reusable geometry engine
+## 9.1 Reusable geometry engine
 
-Prefer reusable components such as:
+Build reusable primitives/components rather than one custom 3D implementation per cultural object.
+
+Useful conceptual components:
 
 ```text
 InteractiveMathScene
@@ -479,9 +515,24 @@ DiscoveryPrompt
 ChallengeController
 ```
 
-The model should be driven by configuration rather than duplicated page-specific geometry code.
+Possible supported geometry types:
 
-Conceptually:
+```text
+rectangle / plane
+triangle
+circle
+cuboid / box
+cylinder
+cone
+sphere
+prism
+```
+
+Only implement geometry types actually required by supplied content.
+
+## 9.2 Configuration-driven geometry
+
+Prefer configuration such as:
 
 ```js
 {
@@ -494,19 +545,20 @@ Conceptually:
 }
 ```
 
-Exact implementation may differ.
+The exact schema is implementation-dependent.
 
-## 8.4 Not everything is 3D
+The key requirement is reusability.
 
-Use 2D interaction for:
+## 9.3 2D vs 3D
+
+Use 2D when the concept is planar:
 
 - perimeter
 - area
-- translation
-- reflection
-- rotation
+- planar shapes
 - patterns
-- other planar concepts
+- transformations
+- reflection/rotation when 3D adds no value
 
 Use 3D when spatial manipulation materially improves understanding:
 
@@ -518,160 +570,191 @@ Use 3D when spatial manipulation materially improves understanding:
 - sphere
 - spatial relationships
 
+Do not force R3F into a lesson just to make the UI look more advanced.
+
 ---
 
-# 9. LEARNING LOOP IMPLEMENTATION
+# 10. LEARNING LOOP AND PEDAGOGY
 
-A learning module should support:
+A lesson should prefer observation and manipulation before assessment:
 
 ```text
 CULTURAL STORY
-  ↓
+   ↓
 OPTIONAL AR
-  ↓
+   ↓
 MATHEMATICAL ABSTRACTION
-  ↓
+   ↓
 INTERACTIVE EXPLORATION
-  ↓
-DISCOVERY
-  ↓
+   ↓
+DISCOVERY PROMPT
+   ↓
 CHALLENGE
-  ↓
+   ↓
 REWARD
 ```
 
-Do not immediately throw a conventional multiple-choice question at the student.
+Avoid reducing the experience to:
 
-The interactive stage should allow observation first.
+```text
+Question → four choices → score
+```
 
 Example:
 
 ```text
-"Ubah radius secara perlahan."
-↓
-student manipulates slider
-↓
-"Apa yang berubah?"
-↓
-student observes live values
-↓
+"Ubah panjang secara perlahan."
+       ↓
+student moves slider
+       ↓
+area changes live
+       ↓
+"Apa yang kamu amati?"
+       ↓
 challenge
 ```
 
-This is the pedagogical distinction from a basic quiz app.
+The interactive stage should make the mathematical relationship observable.
 
 ---
 
-# 10. MISSIONS
+# 11. MISSIONS AND CHALLENGES
 
-Missions are the application/practice layer.
+Missions are the practice/assessment layer.
 
-There are two valid entry paths:
+They are accessible from Home and can also be reached naturally after a learning module.
 
-### Embedded
-
-```text
-Cultural Object
-→ Math Exploration
-→ Discovery
-→ Challenge
-```
-
-### Direct
+Mission/challenge data should conceptually support:
 
 ```text
-Home
-→ Missions
-→ Level-aware Challenge Library
-→ Challenge
-```
-
-Mission content must be filtered by the student's level.
-
-At minimum, conceptually support:
-
-```text
+id
 level
 gradeRange
 topic
 culturalObjectId
+learningModuleId
 difficulty
 challengeType
+question/prompt
+answer/evaluation data
+reward
 ```
 
-Do not mix SD/SMP content indiscriminately in the student's default mission list.
+Filter the default mission library by the student's level.
+
+Do not mix SD and SMP challenges in the same default list without clear labeling.
+
+Challenges may be:
+
+- numerical
+- multiple choice
+- observation-based
+- manipulation-based
+- short answer
+
+Use the simplest interaction that evaluates the intended learning objective.
 
 ---
 
-# 11. PROGRESS / GAMIFICATION
+# 12. PROGRESS AND GAMIFICATION
 
-Progress should reinforce learning, not competition.
+Progress should reinforce learning rather than competition.
 
-Track conceptually:
+Potential progress signals:
 
 - XP
 - completed challenges
-- discovered cultural objects
+- explored cultural objects
 - explored kecamatan
 - discovered math concepts
-- AR experiences
+- completed AR experiences
 - badges
 
-Do not add leaderboards unless explicitly requested.
+Do not add a leaderboard unless explicitly requested.
 
-AR completion is never required for mathematical progress.
-
----
-
-# 12. STUDENT ONBOARDING
-
-The current `FormSiswa` already stores name/class in `sessionStorage`.
-
-Evolve this carefully to include `level`.
-
-Target profile:
-
-```text
-name
-level
-grade
-```
-
-Use labels such as:
-
-- Nama Lengkap
-- Jenjang
-- Kelas
-
-Class options should depend on level:
-
-```text
-SD  → 1–6
-SMP → 7–9
-SMA → 10–12 (future/placeholder)
-```
-
-Do not add email/password authentication.
-
-Supabase persistence can later be layered onto this profile without changing the UX contract.
+AR completion is never a prerequisite for mathematical progress.
 
 ---
 
-# 13. SUPABASE
+# 13. MAP AND MAGETAN NAVIGATION
+
+The map remains an important exploration feature.
+
+Use the existing local GeoJSON/d3-geo approach. Do not replace it with Google Maps, Mapbox, or another tile API without explicit approval.
+
+The project represents Magetan's 18 kecamatan.
+
+The existing GeoJSON may contain village-level polygons grouped by `kecamatan`. Preserve the verified existing data structure and inspect it before changing rendering logic.
+
+Conceptual flow:
+
+```text
+MAP
+ ↓
+KECAMATAN
+ ↓
+CULTURAL OBJECTS AVAILABLE THERE
+```
+
+Inactive/empty kecamatan may remain visible as future content, but do not fabricate cultural data for them.
+
+The map is an exploration/navigation mechanism, not a mandatory gate for missions.
+
+---
+
+# 14. DATA / SOURCE OF TRUTH
+
+Keep content data separate from presentation components.
+
+The existing project may contain `public/data/locations.json` or equivalent content files. Before replacing them, inspect the current schema and consumers.
+
+The preferred conceptual separation is:
+
+```text
+content data
+   ↓
+selectors / hooks
+   ↓
+feature components
+   ↓
+pages
+```
+
+Avoid embedding large cultural stories, curriculum text, formulas, and challenge banks directly inside JSX.
+
+## 14.1 Data ownership
+
+```text
+Cultural Object
+  = cultural identity/context
+
+Learning Module
+  = level-specific mathematics
+
+Challenge
+  = assessment/practice
+
+Progress
+  = student state
+```
+
+Do not duplicate the same cultural story for every grade unless presentation genuinely differs.
+
+---
+
+# 15. SUPABASE / PERSISTENCE
 
 Supabase is the intended persistence layer.
 
-Current repository already contains `src/lib/supabase.js`.
+Before changing the database:
 
-Before creating tables:
+1. Inspect `src/lib/supabase.js` and current environment variables.
+2. Inspect existing SQL/schema/migrations.
+3. Reuse existing structures when appropriate.
+4. Never expose a service-role key in frontend code.
+5. Keep RLS enabled and explicitly test policies.
 
-1. Inspect the existing Supabase client/config.
-2. Inspect any existing SQL/schema/migrations in the repository.
-3. Do not expose service-role credentials in the frontend.
-4. Use environment variables for public Supabase configuration.
-5. Keep frontend access compatible with Supabase RLS.
-
-A conceptual future schema may include:
+A future conceptual schema may contain:
 
 ```text
 students
@@ -686,9 +769,8 @@ cultural_objects
 ├── kecamatan_id
 ├── name
 ├── description
-├── history
-├── photo_url
-└── ...
+├── media
+└── ar_experience_id
 
 learning_modules
 ├── id
@@ -696,685 +778,549 @@ learning_modules
 ├── level
 ├── grade_range
 ├── topic
-├── content
-├── interaction_config
-└── ...
+├── interaction_type
+└── content
 
 challenges
 ├── id
 ├── learning_module_id
 ├── level
-├── grade_range
-├── prompt
-├── config
-└── ...
+├── type
+└── evaluation_data
 
-student_progress
-├── student_id
-├── module_id
+progress
+├── id
+├── student_id/session_id
 ├── challenge_id
-├── status
 ├── score
-└── updated_at
+├── xp
+└── created_at
 ```
 
-This is conceptual guidance, not permission to create a huge schema without checking the existing project state.
+This is a conceptual model, not an instruction to create all tables immediately.
 
-For the deadline, prefer the smallest schema that supports the approved UX.
+Do not create a large database schema until the current feature requires it.
 
 ---
 
-# 14. DATA-FIRST CONTENT ARCHITECTURE
+# 16. TECHNICAL ARCHITECTURE
 
-Do not put large amounts of educational/cultural content directly into JSX.
+The application remains a client-side Vite + React SPA.
 
-Prefer:
+Current baseline:
 
 ```text
-src/data/
+React
+React Router
+Vite
+Supabase JS
+lucide-react
+d3-geo
 ```
 
-for temporary local seed content, or Supabase for production content.
+R3F/Three.js/Drei may be added for interactive math after deliberate evaluation.
 
-Keep content separate from presentation.
+A sensible evolving feature structure is:
 
-Bad:
-
-```jsx
-<h2>Long hardcoded lesson text...</h2>
+```text
+src/
+├── app/
+├── pages/
+├── components/
+├── features/
+│   ├── student/
+│   ├── exploration/
+│   ├── culture/
+│   ├── learning/
+│   ├── math/
+│   ├── challenges/
+│   ├── progress/
+│   └── ar/
+├── domain/
+│   └── math/
+├── data/
+├── hooks/
+├── lib/
+└── assets/
 ```
 
-Preferred:
-
-```jsx
-<LessonContent module={module} />
-```
-
-with content coming from a structured object/query.
-
-This is especially important because final SD/SMP/SMA material will arrive later.
+Do not reorganize the whole repository only for aesthetic reasons. Introduce folders when they improve a feature being actively implemented.
 
 ---
 
-# 15. CULTURAL DATA POLICY
+# 17. LEGACY ARCHITECTURE MIGRATION RULES
 
-Current `magetan-kecamatan.json` is useful existing data and must be preserved unless intentionally migrated.
+The previous project specification used a strict three-layer model where AR lived in separate static HTML pages.
 
-Do not delete or rewrite all location data merely to introduce learning modules.
+That specification is **obsolete as the primary product architecture**.
 
-Separate:
-
-```text
-Kecamatan/location data
-```
-
-from:
+The new target is a unified React learning experience with:
 
 ```text
-Learning module data
+React application
+├── navigation/exploration
+├── cultural content
+├── student personalization
+├── interactive mathematics / R3F
+├── challenges
+├── progress
+└── AR integration
 ```
 
-A cultural object can belong to a kecamatan while supporting multiple learning modules.
+However, legacy AR HTML files may remain temporarily if they are still the most reliable implementation.
 
-Use placeholders for missing photos/assets/descriptions until the non-technical team provides final assets.
+Therefore:
 
-Never invent local history to fill the UI.
+- Do not delete them merely because the architecture changed.
+- Do not allow them to dictate the new UX.
+- Wrap/migrate them behind a clean feature boundary where practical.
+- Remove them only after the replacement is verified.
+
+The old "AR must be a separate HTML page" rule is no longer a product lock.
 
 ---
 
-# 16. ROUTING GUIDELINES
+# 18. UI / UX IMPLEMENTATION RULES
 
-Current routes include:
+The visual direction has already been explored through Google Stitch. Treat the approved Stitch design as a visual reference, not as a license to generate unrelated screens.
 
-```text
-/
-/peta
-/kecamatan/:kecamatanId
-/lokasi/:locationId
-```
+The UI should be:
 
-Future routes may include concepts such as:
-
-```text
-/onboarding
-/missions
-/missions/:missionId
-/learning/:moduleId
-/math/:moduleId
-/ar/:experienceId
-/progress
-/profile
-```
-
-Do not blindly create every route at once.
-
-Choose routes that match the implemented feature and keep route responsibilities clear.
-
-Use route params for stable IDs, not display names.
-
-Avoid encoding large state objects in URLs.
-
----
-
-# 17. UI / DESIGN SYSTEM
-
-The approved MageMatika visual direction is:
-
-- deep navy / dark blue foundation
-- blue → purple gradient accents
-- glassmorphism-inspired cards used selectively
-- rounded corners
-- modern friendly typography
-- Lucide icons
-- subtle geometric/cultural visual treatment
-- strong mobile usability
-
-Do not replace the visual identity with a generic education dashboard.
-
-The design should feel:
-
-- modern
-- interactive
+- mobile-first
 - educational
-- culturally grounded
-- not childish
-- not overly corporate
+- modern
+- slightly playful
+- cohesive across onboarding, exploration, AR, math, missions, and progress
+- visually rich enough to feel innovative without becoming noisy
 
-### Age adaptation
+Use a consistent design system for:
 
-Keep one brand.
+- typography
+- spacing
+- cards
+- buttons
+- icons
+- gradients/visual accents
+- progress indicators
+- modal/sheet behavior
 
-For SD:
+Do not introduce a new visual language on individual pages.
 
-- simpler language
-- larger visual cues
-- simpler controls
-- stronger visual feedback
-
-For SMP:
-
-- more analytical information
-- richer controls
-- more detailed mathematical feedback
-
-Do not create completely separate themes for SD and SMP.
-
----
-
-# 18. ACCESSIBILITY
-
-Always consider:
+Accessibility basics remain required:
 
 - readable contrast
-- keyboard accessibility
-- visible focus states
-- large touch targets
-- labels for sliders
-- non-color-only feedback
-- reduced motion where appropriate
-- accessible error messages
-- mobile safe areas for AR
-
-Interactive 3D controls must have equivalent readable values in normal HTML UI.
-
-A student must not need to visually interpret the 3D canvas alone to understand the mathematics.
+- sufficiently large touch targets
+- labels for controls
+- clear loading/error states
+- keyboard-safe interaction where applicable
+- avoid relying on color alone
 
 ---
 
-# 19. PERFORMANCE
+# 19. PERFORMANCE AND DEVICE CONSTRAINTS
 
-The project is deadline-constrained.
+Primary experience is mobile web, especially Android Chrome.
+
+For R3F:
+
+- keep geometry simple
+- avoid unnecessary high-poly assets
+- dispose resources when appropriate
+- avoid rendering expensive scenes when not visible
+- keep canvas size reasonable
+- avoid unnecessary animation loops
+- use lazy loading where appropriate
+
+For AR:
+
+- test on a real Android device
+- handle camera permission failure
+- handle target-not-found state
+- handle target-lost state
+- avoid loading AR libraries on every page if they are not needed
+
+For content:
+
+- compress images
+- lazy-load heavy media
+- avoid large bundles
+- keep cultural photos optimized for mobile
+
+---
+
+# 20. AGENT WORKFLOW
+
+Every meaningful task should follow:
+
+```text
+1. READ AGENTS.md
+       ↓
+2. INSPECT CURRENT CODE
+       ↓
+3. IDENTIFY EXISTING DEPENDENCIES / ROUTES / DATA
+       ↓
+4. STATE THE PLAN
+       ↓
+5. IMPLEMENT THE SMALLEST COHERENT CHANGE
+       ↓
+6. RUN BUILD / LINT / RELEVANT TESTS
+       ↓
+7. VISUALLY VERIFY WHEN UI IS INVOLVED
+       ↓
+8. REPORT WHAT CHANGED + WHAT NEEDS HUMAN VERIFICATION
+```
+
+Before architectural changes, inspect the existing implementation rather than assuming the old architecture described in historical documentation still exists.
+
+## 20.1 When to ask the human
+
+Ask for intervention when you need:
+
+- physical Android/AR testing
+- camera permission testing
+- real cultural assets not yet supplied
+- final curriculum/content
+- a product decision not specified here
+- credentials or environment variables that cannot safely be inferred
+- confirmation that a risky migration is acceptable
+
+Do not ask for confirmation for trivial implementation details that are already specified.
+
+## 20.2 Do not over-engineer
+
+The deadline is 28 August 2026 and the technical team is effectively one person assisted by AI agents.
 
 Prefer:
 
-- lightweight components
-- lazy loading for heavy 3D/AR routes
-- code splitting for R3F/Three.js/AR dependencies
-- small placeholder assets
-- avoiding unnecessary re-renders
-- memoization only when it provides measurable benefit
+```text
+working + clear + reusable + testable
+```
 
-Do not load the full 3D/AR stack on the landing page if it can be lazy-loaded.
-
-Avoid expensive map or canvas work during ordinary Home navigation.
-
----
-
-# 20. RESPONSIVE REQUIREMENTS
-
-Primary target:
-
-- mobile
-- tablet
-- desktop
-
-Especially validate:
-
-- onboarding form
-- map
-- cultural story
-- sliders
-- interactive math canvas
-- AR viewport
-- challenge controls
-
-Do not make the desktop layout the source of truth for mobile.
-
----
-
-# 21. COMPONENT ARCHITECTURE
-
-Prefer reusable components over page-specific duplication.
-
-Likely reusable concepts include:
+over:
 
 ```text
-Layout
-StudentOnboarding / FormSiswa
-GradeSelector
-ClassSelector
-StudentProfile
-CulturalCard
-CulturalStory
-LearningModuleCard
-ARExperience
-ARFallback
-MathExploration
-InteractiveMathScene
-GeometryModel
-GeometryControls
-DimensionLabel
-MathValuePanel
-DiscoveryPrompt
-ChallengeCard
-MissionCard
-ProgressCard
-BadgeCard
+perfect + abstract + over-generalized
 ```
 
-Do not create abstractions merely for abstraction's sake.
+---
 
-A component should be extracted when it has:
+# 21. VERIFICATION RULES
 
-- reusable behavior
-- reusable UI
-- meaningful domain responsibility
+## Agent-verifiable
+
+The agent should verify:
+
+- no syntax errors
+- build succeeds
+- routes resolve
+- imports resolve
+- no obvious console errors
+- data JSON is valid
+- level filtering behaves correctly
+- geometry state/calculation consistency
+- responsive layout at representative viewport sizes
+
+## Human-required
+
+The agent must not self-certify:
+
+- camera permission behavior on physical devices
+- AR target detection reliability
+- physical-device rendering/performance
+- real-world cultural accuracy
+- final curriculum correctness
+- final field measurements
+
+For these, explicitly report the manual verification needed.
 
 ---
 
-# 22. STATE MANAGEMENT
+# 22. MILESTONES — NEW VERTICAL-SLICE ORDER
 
-Do not introduce Redux or another global state library unless there is a demonstrated need.
+The old milestone order based on individual technical layers is superseded.
 
-Use:
+Use vertical slices so a working product exists early.
 
-- local React state for local interaction
-- context/hooks for small cross-page concerns
-- sessionStorage for lightweight current student onboarding state where appropriate
-- Supabase for persisted student/content/progress data
-
-Student context should have one clear source of truth.
-
-Avoid reading arbitrary `sessionStorage` keys throughout dozens of components.
-
-If the project grows, introduce a small `StudentContext` or equivalent hook.
-
----
-
-# 23. MATH DOMAIN LOGIC
-
-Mathematical calculations must be deterministic and testable outside the 3D renderer.
-
-Prefer pure functions such as:
+### V1 — Student onboarding
 
 ```text
-calculateArea(...)
-calculatePerimeter(...)
-calculateVolume(...)
-calculateTransformation(...)
+Landing → Onboarding → Personalized Home
 ```
 
-depending on supplied curriculum.
+DoD:
+- name, jenjang, kelas work
+- session context persists
+- Home displays the correct level context
 
-Do not duplicate formulas across UI components.
-
-Units must be explicit.
-
-Example:
+### V2 — Exploration
 
 ```text
-cm
-cm²
-cm³
+Home → Map → Kecamatan → Cultural Object → Story
 ```
 
-Do not silently mix units.
+DoD:
+- existing map still works
+- cultural object data renders
+- no fabricated content
 
-Do not add mathematical topics merely because a geometry primitive exists. The curriculum/data model determines what is taught.
-
----
-
-# 24. INTERACTION CONFIGURATION
-
-Interactive math should be configuration-driven where practical.
-
-Conceptually:
-
-```js
-{
-  type: 'cylinder',
-  parameters: {
-    radius: { min: 1, max: 10, step: 0.5 },
-    height: { min: 5, max: 30, step: 1 }
-  },
-  calculations: ['volume'],
-  prompts: [...]
-}
-```
-
-The geometry component should consume configuration rather than knowing which cultural object it represents.
-
-This makes it possible for final curriculum content to be inserted later without rebuilding the 3D engine.
-
----
-
-# 25. AR FALLBACK CONTRACT
-
-Every AR-enabled learning object must have a fallback.
-
-Possible fallback:
+### V3 — Interactive mathematics
 
 ```text
-AR unavailable
-↓
-"Lihat Model 3D"
-↓
-interactive mathematical / cultural preview
+Cultural Object → Math Exploration → Manipulation → Live calculation
 ```
 
-For desktop:
+DoD:
+- at least one reusable geometry type works end-to-end
+- controls update visualization and deterministic math state
+- mobile interaction works
+
+### V4 — Challenge
 
 ```text
-"Pengalaman AR terutama tersedia di perangkat mobile."
-↓
-QR / mobile continuation or preview
+Math Exploration → Discovery → Challenge → Reward
 ```
 
-Never leave the user at a dead-end permission/error screen.
+DoD:
+- challenge is grade-aware
+- evaluation is deterministic
+- result/reward is visible
 
----
-
-# 26. ERROR / EMPTY STATES
-
-Every data-driven page should have:
-
-- loading state
-- empty state
-- error state
-- retry/back path where relevant
-
-Never render broken `undefined` content.
-
-If final material is missing, show a deliberate placeholder instead of fake content.
-
----
-
-# 27. SECURITY
-
-Never:
-
-- commit `.env` secrets
-- expose Supabase service-role keys
-- put private credentials in source
-- trust arbitrary URL/query parameters for privileged operations
-- store sensitive student data unnecessarily
-
-Student onboarding should remain minimal.
-
----
-
-# 28. TESTING / VALIDATION
-
-At minimum, before considering a significant feature complete:
-
-1. `npm run lint`
-2. `npm run build`
-3. manually test the primary user flow
-4. test mobile-sized viewport
-5. test a missing-data state
-6. test a level mismatch / empty-content state
-
-For math logic, test pure calculation functions with representative values and edge cases.
-
-For interactive geometry, verify that:
+### V5 — AR integration
 
 ```text
-slider changes
-→ geometry changes
-→ displayed dimensions change
-→ calculation changes
-→ challenge state remains consistent
+Cultural Object → AR → Cultural immersion → Math Exploration
 ```
 
----
+DoD:
+- existing or new AR implementation is reachable
+- fallback exists
+- human verifies on physical Android device
 
-# 29. AGENT WORKFLOW
+### V6 — Missions + Progress
 
-When receiving a task, follow this order:
+```text
+Home → Missions → Level-aware challenges → Progress
+```
 
-### Step 1 — Understand
+DoD:
+- mission list respects student level
+- progress/reward state is visible
 
-Read this file and the relevant source files.
+### V7 — Final content integration
 
-### Step 2 — Inspect
+Replace provisional material with supplied final content/assets.
 
-Search the repository for existing implementations before adding new ones.
+DoD:
+- SD/SMP content mapped correctly
+- no accidental invented content remains
+- placeholders are removed where final data exists
 
-### Step 3 — Plan
+### V8 — End-to-end demo hardening
 
-State:
+```text
+Onboarding
+→ Home
+→ Explore
+→ Culture
+→ AR / Math
+→ Challenge
+→ Progress
+```
 
-- affected files
-- architectural impact
-- dependencies
-- data impact
-- risk
-
-For a small change, keep the plan short.
-
-### Step 4 — Implement incrementally
-
-Prefer small coherent changes over a huge rewrite.
-
-### Step 5 — Validate
-
-Run lint/build and relevant manual tests.
-
-### Step 6 — Report
-
-Summarize:
-
-- what changed
-- files changed
-- what was intentionally left as placeholder
-- validation result
-- known limitations
+DoD:
+- blind test by a person who has not used the app before
+- physical AR test if AR is part of demo
+- production build works
+- Vercel deployment works
 
 ---
 
-# 30. WHEN CONTENT IS NOT FINAL
+# 23. PRIORITY UNDER DEADLINE PRESSURE
 
-This is a special project rule.
+When time becomes constrained, prioritize in this order:
 
-The development team will provide final SD/SMP/SMA curriculum and cultural content later.
-
-Until then:
-
-- use current project content as seed data
-- use placeholders where necessary
-- build reusable schemas/components
-- do not optimize the entire architecture around temporary lesson wording
-- do not make irreversible assumptions about grade-specific content
-
-When final content arrives, the agent should first:
-
-1. inspect and map the content
-2. identify new/changed topics
-3. identify cultural-object mappings
-4. identify level/grade ranges
-5. identify required 2D vs 3D interactions
-6. identify challenge types
-7. identify AR requirements
-8. update the data layer
-9. validate that UI components can consume it without page-specific rewrites
-
-If final content is delivered as documents, preserve the source terminology and do not silently "correct" it.
-
----
-
-# 31. DEADLINE / SCOPE CONTROL
-
-Deadline: **28 August 2026**.
-
-Priority order:
-
-## P0 — Core learning product
+### Tier A — must work
 
 1. Student onboarding
-2. SD/SMP level-aware content
-3. Explore / Map / Kecamatan
-4. Cultural story
-5. Mathematical exploration
-6. Challenges
-7. Progress
+2. Grade-aware Home
+3. Cultural exploration
+4. At least one strong interactive mathematics experience
+5. Challenge flow
+6. Stable mobile UX
 
-## P1 — Innovation
+### Tier B — high-value innovation
 
-8. Reusable interactive 2D/3D math engine
-9. AR cultural immersion
-10. AR → math transition
-11. optional bonus/location AR path
+7. AR cultural immersion
+8. Multiple reusable geometry types
+9. Mission library
+10. Progress/reward persistence
 
-## P2 — Polish
+### Tier C — polish / stretch
 
-12. badges / XP refinement
-13. animations
-14. additional cultural objects
-15. advanced responsive polish
+11. Additional cultural objects
+12. Additional geometry types not required by curriculum
+13. Advanced animations
+14. Advanced gamification
+15. SMA content
 
-## P3 — Future
+Never sacrifice the core learning loop to increase the number of cultural checkpoints.
 
-16. SMA final content
-17. advanced AR
-18. custom 3D cultural models
-19. non-essential social/multiplayer features
-
-If time becomes constrained, protect P0 first.
-
-Never sacrifice the complete learning loop merely to add another flashy feature.
+A smaller number of complete, polished, pedagogically coherent experiences is preferable to many incomplete checkpoints.
 
 ---
 
-# 32. WHAT COUNTS AS A SUCCESSFUL IMPLEMENTATION
+# 24. CURRENT DATA / REPOSITORY MIGRATION NOTES
 
-The student should be able to complete this without visiting a physical location:
+The repository may still contain assumptions from the previous checkpoint-based MVP, including fields such as:
 
 ```text
-Open MageMatika
-↓
-Enter name + level + class
-↓
-See personalized Home
-↓
-Explore Magetan
-↓
-Open a cultural object
-↓
-Read cultural story
-↓
-Optionally experience AR
-↓
-See mathematical abstraction
-↓
-Manipulate the math model
-↓
-Observe what changes
-↓
-Complete a challenge
-↓
-Receive feedback/reward
-↓
-See progress
+kecamatanId
+id
+name
+jenjang
+materiMatematika
+shapeType
+dimensions
+formula
+correctAnswer
+isPlaceholderData
+arCheckpointUrl
 ```
 
-And a student should also be able to do:
+Do not delete these blindly.
+
+During migration:
+
+1. Identify which existing fields remain useful.
+2. Introduce new normalized content structures incrementally.
+3. Maintain compatibility while existing components still depend on legacy fields.
+4. Remove obsolete fields only after all consumers are migrated.
+
+The goal is **migration**, not a destructive rewrite.
+
+---
+
+# 25. SECURITY / ENVIRONMENT
+
+Never commit:
+
+- `.env.local`
+- Supabase service-role keys
+- private credentials
+- API secrets
+
+Frontend Supabase anon/public configuration may be exposed through environment variables as intended by Supabase, but RLS must protect database access.
+
+Never bypass RLS merely to make a demo work.
+
+---
+
+# 26. DEFINITION OF DONE
+
+A feature is not complete merely because the code exists.
+
+For a normal feature:
+
+- implementation exists
+- existing behavior is preserved unless intentionally changed
+- build/lint passes
+- no obvious console errors
+- mobile UI has been visually checked
+- data is not fabricated
+- grade filtering is correct when relevant
+
+For AR:
+
+- all normal checks pass
+- fallback exists
+- physical Android test is explicitly completed by a human before calling it production-ready
+
+For curriculum/content:
+
+- source material has been supplied
+- content is mapped to the correct level
+- terminology follows the supplied source
+- placeholders are clearly removed/replaced
+
+---
+
+# 27. HISTORICAL ARCHITECTURE — DO NOT REINSTATE AUTOMATICALLY
+
+The previous AGENTS specification described:
 
 ```text
-Home
-↓
-Missions
-↓
-Level-filtered challenge
-↓
-Challenge
-↓
-Reward
+Map → Kecamatan → Location → static AR HTML → quiz
 ```
 
----
-
-# 33. FINAL PRODUCT PRINCIPLES
-
-Keep these principles in mind when making any decision:
-
-### Principle 1
-**Culture is the context, not decoration.**
-
-### Principle 2
-**AR immerses students in culture; it does not gate mathematics.**
-
-### Principle 3
-**Interactive mathematics is the main innovation in the learning experience.**
-
-### Principle 4
-**The same cultural object may teach different mathematics at different levels.**
-
-### Principle 5
-**Student level is a first-class content filter.**
-
-### Principle 6
-**Use 3D when it improves mathematical understanding, not because 3D is fashionable.**
-
-### Principle 7
-**Final curriculum content will replace provisional content; architecture must make that replacement cheap.**
-
-### Principle 8
-**A smaller complete learning loop is better than a larger collection of unfinished features.**
-
-### Principle 9
-**Never invent cultural or curriculum facts to make a screen look complete.**
-
-### Principle 10
-**Preserve working behavior and evolve the codebase incrementally.**
-
----
-
-# 34. AGENT DECISION RULE
-
-When unsure, ask:
+with strict separation of:
 
 ```text
-Does this change make the student better able to:
-
-1. discover Magetan culture?
-2. see the mathematical idea inside it?
-3. manipulate and observe the mathematics?
-4. apply the idea in a challenge?
-5. do so at the correct learning level?
+Layer 1: React navigation
+Layer 2: React content
+Layer 3: separate static AR HTML
 ```
 
-If the answer is no, question whether the feature belongs in the deadline-critical build.
+That architecture was valid for the previous MVP direction but is **not the current product architecture**.
 
-If the change concerns missing curriculum/cultural facts, do not guess. Use a placeholder and request the source material.
+Do not reintroduce the following as mandatory rules:
+
+- AR must be a separate HTML page
+- quiz can only appear after AR
+- physical location is required for learning
+- SD-only content
+- four fixed checkpoints as the entire product
+- every cultural object maps to exactly one math lesson
+- A-Frame/MindAR must remain the only AR implementation
+
+Legacy code may remain temporarily for compatibility, but new work must follow this document.
 
 ---
 
-# 35. CURRENT IMPLEMENTATION NOTE
+# 28. FINAL PRODUCT PRINCIPLE
 
-The existing repository is an early implementation, not the final architecture.
+When making a product decision, ask:
 
-It already contains useful foundations:
+> **"Does this help a student discover mathematics through Magetan culture, or are we adding technology/complexity merely because it looks impressive?"**
 
-- React/Vite
-- React Router
-- Magetan map data
-- student form
-- Supabase client
-- cultural/location pages
-- existing AR checkpoint integration
-
-The new architecture should **evolve these foundations** toward:
+The preferred MageMatika experience is:
 
 ```text
-Student Context
+MAGETAN CULTURE
       ↓
-Level-aware Content
+STUDENT CONTEXT
       ↓
-Cultural Context
+CULTURAL STORY
       ↓
-AR (optional)
+OPTIONAL AR IMMERSION
       ↓
-Mathematical Abstraction
+MATHEMATICAL ABSTRACTION
       ↓
-Reusable Interactive Math Engine
+MANIPULABLE GEOMETRY
       ↓
-Challenges
+OBSERVE + EXPERIMENT
       ↓
-Progress
+DISCOVER
+      ↓
+SOLVE
+      ↓
+REWARD
+      ↓
+PROGRESS
 ```
 
-Do not discard the existing foundations without a concrete technical reason.
+**Build the learning experience first. Use AR, maps, R3F, Supabase, and gamification only where they strengthen that experience.**
 
 ---
 
-# END OF AGENTS.md
+# 29. HUMAN INTERVENTION RULE
+
+> **Always tell the user when direct human intervention is required.**
+
+Examples:
+
+- "AR pipeline is implemented; please test this on an Android device."
+- "The final curriculum is still required before this content can be marked final."
+- "The cultural measurement is still a placeholder; please provide the field measurement."
+- "Supabase production credentials/environment variables must be configured by the project owner."
+
+Never hide uncertainty behind a successful build.
