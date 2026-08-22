@@ -1324,3 +1324,51 @@ Examples:
 - "Supabase production credentials/environment variables must be configured by the project owner."
 
 Never hide uncertainty behind a successful build.
+
+## Curriculum Source of Truth
+
+Materi pembelajaran dari tim non-teknis disimpan di:
+
+`docs/curriculum/`
+
+Dokumen tersebut adalah SOURCE MATERIAL, bukan runtime data.
+
+### Aturan wajib
+
+1. AI Agent WAJIB membaca materi yang relevan di `docs/curriculum/`
+   sebelum membuat atau mengubah learning module.
+
+2. Jangan mengarang materi, kompetensi, rumus, contoh soal,
+   atau cakupan jenjang yang tidak terdapat dalam source material.
+
+3. Materi yang belum final harus dianggap sebagai:
+   `DRAFT / PROVISIONAL`.
+
+4. Jangan menganggap materi draft sebagai kurikulum final.
+
+5. Jika terdapat konflik antara:
+   - source material,
+   - learningModules.json,
+   - instruksi lama,
+   
+   Agent WAJIB melaporkan konflik tersebut kepada user sebelum
+   mengambil keputusan substantif.
+
+6. Jangan mengubah file source material untuk menyesuaikannya
+   dengan kebutuhan aplikasi.
+
+7. `learningModules.json` adalah RUNTIME CONTENT MODEL,
+   sedangkan `docs/curriculum/` adalah CONTENT REFERENCE.
+
+8. Ketika materi final diberikan oleh tim non-teknis,
+   Agent harus melakukan migration/reconciliation terhadap
+   learningModules.json berdasarkan materi final tersebut.
+
+9. Placeholder boleh digunakan untuk materi yang belum tersedia,
+   tetapi WAJIB ditandai secara eksplisit, misalnya:
+   `isPlaceholderData: true`.
+
+10. Jika source material tidak menyediakan informasi tertentu,
+    Agent tidak boleh mengisi kekosongan tersebut berdasarkan
+    asumsi umum. Tandai sebagai `TODO`, `TBD`, atau placeholder
+    dan laporkan kepada user.

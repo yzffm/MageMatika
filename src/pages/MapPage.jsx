@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { ChevronLeft, MapPin, Lock } from 'lucide-react'
 
-import { useLocations } from '../hooks/useLocations'
+import { useCulturalObjects } from '../hooks/useContent.js'
 import { useToast } from '../hooks/useToast.jsx'
 import geojsonData from '../data/magetan-kecamatan.json'
 
@@ -197,7 +197,7 @@ function buildKecamatanFeatures(data) {
 
 
 export default function MapPage() {
-  const { locations, loading } = useLocations()
+  const { culturalObjects, loading } = useCulturalObjects()
   const navigate = useNavigate()
   const { showToast } = useToast()
 
@@ -276,13 +276,13 @@ export default function MapPage() {
    */
   const activeKecamatanIds = useMemo(() => {
     return new Set(
-      locations
+      culturalObjects
         .map((location) =>
           normalizeKecamatanId(location.kecamatanId)
         )
         .filter(Boolean)
     )
-  }, [locations])
+  }, [culturalObjects])
 
 
   /**
@@ -311,7 +311,7 @@ export default function MapPage() {
     )
 
     return result
-  }, [])
+  }, [geojsonData])
 
   /**
    * ---------------------------------------------------------

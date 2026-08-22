@@ -1,19 +1,35 @@
 import { useState } from 'react'
-import { User, GraduationCap, ArrowRight } from 'lucide-react'
+import { User, GraduationCap, School, ArrowRight } from 'lucide-react'
+import { GRADE_RANGES } from '../hooks/useStudentContext.js'
 import './FormSiswa.css'
 
 /**
- * Student identity form. Saves to sessionStorage and calls onSubmit callback.
+ * Student onboarding form.
+ *
+ * Fields: Nama Lengkap, Jenjang (SD/SMP/SMA), Kelas (dynamic based on jenjang).
+ * Calls onSubmit({ name, level, kelas }) on valid submission.
  */
 export default function FormSiswa({ onSubmit }) {
   const [name, setName] = useState(() => sessionStorage.getItem('studentName') || '')
+  const [level, setLevel] = useState(() => sessionStorage.getItem('studentLevel') || '')
   const [kelas, setKelas] = useState(() => sessionStorage.getItem('studentClass') || '')
   const [errors, setErrors] = useState({})
+
+  const availableGrades = level && GRADE_RANGES[level] ? GRADE_RANGES[level] : []
+
+  const handleLevelChange = (newLevel) => {
+    setLevel(newLevel)
+    setKelas('')
+    if (errors.level) {
+      setErrors(prev => ({ ...prev, level: undefined }))
+    }
+  }
 
   const validate = () => {
     const newErrors = {}
     if (!name.trim()) newErrors.name = 'Nama wajib diisi'
-    if (!kelas.trim()) newErrors.kelas = 'Kelas wajib diisi'
+    if (!level) newErrors.level = 'Jenjang wajib dipilih'
+    if (!kelas) newErrors.kelas = 'Kelas wajib dipilih'
     return newErrors
   }
 
@@ -24,16 +40,20 @@ export default function FormSiswa({ onSubmit }) {
       setErrors(newErrors)
       return
     }
-    sessionStorage.setItem('studentName', name.trim())
-    sessionStorage.setItem('studentClass', kelas.trim())
     setErrors({})
-    onSubmit?.({ name: name.trim(), kelas: kelas.trim() })
+    onSubmit?.({ name: name.trim(), level, kelas })
   }
 
   return (
-    <form className="form-siswa glass-card" onSubmit={handleSubmit} id="form-siswa">
-      <h2 className="form-siswa-title">Masuk untuk Mulai</h2>
+    <form className="form-siswa" onSubmit={handleSubmit} id="form-siswa">
+      <div className="form-siswa-header">
+        <h2 className="form-siswa-title">Mari Kenalan Dulu 👋</h2>
+        <p className="form-siswa-subtitle">
+          Siap menemukan matematika di balik budaya Magetan?
+        </p>
+      </div>
 
+      {/* Nama */}
       <div className="form-field">
         <label htmlFor="input-name" className="form-label">
           <User size={14} />
@@ -43,31 +63,79 @@ export default function FormSiswa({ onSubmit }) {
           id="input-name"
           type="text"
           className={`form-input ${errors.name ? 'form-input--error' : ''}`}
-          placeholder="Masukkan nama lengkap"
+          placeholder="Penjelajah Muda"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            setName(e.target.value)
+            if (errors.name) setErrors(prev => ({ ...prev, name: undefined }))
+          }}
           autoComplete="name"
         />
         {errors.name && <span className="form-error">{errors.name}</span>}
       </div>
 
+      {/* Jenjang */}
       <div className="form-field">
-        <label htmlFor="input-kelas" className="form-label">
-          <GraduationCap size={14} />
-          Kelas
+        <label className="form-label">
+          <School size={14} />
+          Jenjang
         </label>
-        <input
-          id="input-kelas"
-          type="text"
-          className={`form-input ${errors.kelas ? 'form-input--error' : ''}`}
-          placeholder="cth: 8A"
-          value={kelas}
-          onChange={(e) => setKelas(e.target.value)}
-        />
-        {errors.kelas && <span className="form-error">{errors.kelas}</span>}
+        <div className="form-jenjang-group">
+          {['SD', 'SMP', 'SMA'].map((j) => {
+            const isActive = level === j
+            const isSMA = j === 'SMA'
+            return (
+              <button
+                key={j}
+                type="button"
+                className={[
+                  'form-jenjang-btn',
+                  isActive ? 'form-jenjang-btn--active' : '',
+                  isSMA ? 'form-jenjang-btn--future' : '',
+                ].join(' ')}
+                onClick={() => handleLevelChange(j)}
+                aria-pressed={isActive}
+              >
+                <span className="form-jenjang-label">{j}</span>
+                {isSMA && <span className="form-jenjang-badge">Segera Hadir</span>}
+              </button>
+            )
+          })}
+        </div>
+        {errors.level && <span className="form-error">{errors.level}</span>}
       </div>
 
-      <button type="submit" className="btn btn-primary btn-block btn-lg" id="btn-mulai">
+      {/* Kelas — only shown when jenjang is selected */}
+      {level && availableGrades.length > 0 && (
+        <div className="form-field">
+          <label className="form-label">
+            <GraduationCap size={14} />
+            Kelas
+          </label>
+          <div className="form-kelas-group">
+            {availableGrades.map((grade) => (
+              <button
+                key={grade}
+                type="button"
+                className={[
+                  'form-kelas-btn',
+                  kelas === String(grade) ? 'form-kelas-btn--active' : '',
+                ].join(' ')}
+                onClick={() => {
+                  setKelas(String(grade))
+                  if (errors.kelas) setErrors(prev => ({ ...prev, kelas: undefined }))
+                }}
+                aria-pressed={kelas === String(grade)}
+              >
+                {grade}
+              </button>
+            ))}
+          </div>
+          {errors.kelas && <span className="form-error">{errors.kelas}</span>}
+        </div>
+      )}
+
+      <button type="submit" className="form-submit-btn" id="btn-mulai">
         Mulai Jelajah
         <ArrowRight size={18} />
       </button>

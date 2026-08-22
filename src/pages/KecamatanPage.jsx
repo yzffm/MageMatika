@@ -1,12 +1,12 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { ChevronLeft, MapPin, BookOpen, GraduationCap } from 'lucide-react'
-import { useLocations } from '../hooks/useLocations'
+import { useCulturalObjects } from '../hooks/useContent.js'
 import './KecamatanPage.css'
 
 export default function KecamatanPage() {
   const { kecamatanId } = useParams()
   const navigate = useNavigate()
-  const { locations, loading } = useLocations()
+  const { culturalObjects, loading } = useCulturalObjects()
 
   if (loading) {
     return (
@@ -19,7 +19,7 @@ export default function KecamatanPage() {
     )
   }
 
-  const destinasiList = locations.filter(l => l.kecamatanId === kecamatanId)
+  const destinasiList = culturalObjects.filter(l => l.kecamatanId === kecamatanId)
   // Kalau destinasi ada, ambil nama dari data, kalau tidak capitalize ID-nya
   const kecamatanName = destinasiList.length > 0 
     ? destinasiList[0].kecamatanName 
@@ -49,14 +49,6 @@ export default function KecamatanPage() {
               className="destinasi-card glass-card"
               onClick={() => navigate(`/lokasi/${dest.id}`)}
             >
-              <div className="destinasi-badges">
-                <span className="badge badge-primary">
-                  <BookOpen size={12} /> {dest.materiMatematika}
-                </span>
-                <span className="badge badge-secondary">
-                  <GraduationCap size={12} /> {dest.jenjang}
-                </span>
-              </div>
               <h2 className="destinasi-name">{dest.name}</h2>
               <p className="destinasi-desc">{dest.shortDescription}</p>
               

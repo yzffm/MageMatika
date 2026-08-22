@@ -1,0 +1,82 @@
+[
+  {
+    "id": "tas-jali-jali-sd",
+    "culturalObjectId": "tas-jali-jali",
+    "level": "SD",
+    "gradeRange": [4, 6],
+    "topic": "Luas Persegi Panjang",
+    "title": "Mengenal Luas lewat Anyaman",
+    "isPlaceholderData": true,
+    "mathematicalConcept": {
+      "shapeType": "rectangle",
+      "dimensions": { "panjang": 30, "lebar": 20, "unit": "cm" },
+      "formula": "L = p × l",
+      "correctAnswer": 600,
+      "answerUnit": "cm²"
+    }
+  },
+  {
+    "id": "pring-sedapur-sd",
+    "culturalObjectId": "pring-sedapur",
+    "level": "SD",
+    "gradeRange": [4, 6],
+    "topic": "Luas Persegi Panjang",
+    "title": "Geometri pada Motif Bambu",
+    "isPlaceholderData": true,
+    "mathematicalConcept": {
+      "shapeType": "rectangle",
+      "dimensions": { "panjang": 25, "lebar": 15, "unit": "cm" },
+      "formula": "L = p × l",
+      "correctAnswer": 375,
+      "answerUnit": "cm²"
+    }
+  },
+  {
+    "id": "pragak-sd",
+    "culturalObjectId": "pragak",
+    "level": "SD",
+    "gradeRange": [4, 6],
+    "topic": "Luas Segitiga",
+    "title": "Pola Segitiga Batik Pragak",
+    "isPlaceholderData": true,
+    "mathematicalConcept": {
+      "shapeType": "triangle",
+      "dimensions": { "alas": 20, "tinggi": 15, "unit": "cm" },
+      "formula": "L = ½ × a × t",
+      "correctAnswer": 150,
+      "answerUnit": "cm²"
+    }
+  },
+  {
+    "id": "gerabah-nguri-sd",
+    "culturalObjectId": "gerabah-nguri",
+    "level": "SD",
+    "gradeRange": [4, 6],
+    "topic": "Volume Tabung",
+    "title": "Menghitung Kapasitas Gerabah",
+    "isPlaceholderData": true,
+    "mathematicalConcept": {
+      "shapeType": "cylinder",
+      "dimensions": { "diameter": 14, "tinggi": 20, "unit": "cm" },
+      "formula": "V = π × r² × t",
+      "correctAnswer": 3078.76,
+      "answerUnit": "cm³"
+    }
+  },
+  {
+    "id": "tas-jali-jali-smp",
+    "culturalObjectId": "tas-jali-jali",
+    "level": "SMP",
+    "gradeRange": [7, 9],
+    "topic": "Luas Permukaan Balok",
+    "title": "Luas Permukaan Tas Jali-Jali",
+    "isPlaceholderData": true,
+    "mathematicalConcept": {
+      "shapeType": "cuboid",
+      "dimensions": { "panjang": 30, "lebar": 20, "tinggi": 15, "unit": "cm" },
+      "formula": "L = 2(pl + pt + lt)",
+      "correctAnswer": 2700,
+      "answerUnit": "cm²"
+    }
+  }
+]

@@ -1,62 +1,79 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { MapPin, Compass, Sparkles } from 'lucide-react'
+import { useStudentContext } from '../hooks/useStudentContext.js'
 import FormSiswa from '../components/FormSiswa.jsx'
 import './HomePage.css'
 
+/**
+ * Landing / Onboarding page.
+ *
+ * If student already has a session, redirects to /home.
+ * Otherwise shows the onboarding form.
+ *
+ * Design reference: Stitch "Masuk ke MageMatika" screen.
+ */
 export default function HomePage() {
   const navigate = useNavigate()
+  const { isLoggedIn, saveStudent } = useStudentContext()
 
-  const handleFormSubmit = () => {
-    navigate('/peta')
+  // If student already logged in, redirect to personalized home
+  useEffect(() => {
+    if (isLoggedIn) {
+      // Use replace so back button doesn't loop
+      navigate('/home', { replace: true })
+    }
+  }, [isLoggedIn, navigate])
+
+  if (isLoggedIn) {
+    return null
+  }
+
+  const handleFormSubmit = ({ name, level, kelas }) => {
+    saveStudent({ name, level, kelas })
+    navigate('/home')
   }
 
   return (
-    <div className="home-page">
-      {/* Background decorative elements */}
-      <div className="home-bg-orb home-bg-orb--1" />
-      <div className="home-bg-orb home-bg-orb--2" />
-      <div className="home-bg-orb home-bg-orb--3" />
+    <div className="landing-page">
+      {/* Gradient background with organic orbs */}
+      <div className="landing-bg" />
+      <div className="landing-orb landing-orb--1" />
+      <div className="landing-orb landing-orb--2" />
 
-      <div className="page-container home-content">
-        {/* Hero Section */}
-        <header className="home-hero animate-fade-in-up">
-          <div className="home-icon-badge">
-            <Sparkles size={28} />
-          </div>
-          <h1 className="home-title">
-            Mage<span className="home-title-accent">Matika</span>
+      <div className="landing-content">
+        {/* Logo header */}
+        <header className="landing-header animate-fade-in-up">
+          <h1 className="landing-logo">
+            <span className="material-symbols-outlined landing-logo-icon">explore</span>
+            MageMatika
           </h1>
-          <p className="home-subtitle">
-            Jelajahi Matematika melalui Kearifan Lokal Kabupaten Magetan
-            dengan teknologi <strong>Augmented Reality</strong>
-          </p>
         </header>
 
-        {/* Features */}
-        <div className="home-features stagger-children">
-          <div className="home-feature glass-card">
-            <div className="home-feature-icon">
-              <MapPin size={20} />
-            </div>
-            <div>
-              <h3 className="home-feature-title">Peta Interaktif</h3>
-              <p className="home-feature-desc">Jelajahi 18 kecamatan Magetan</p>
-            </div>
-          </div>
-          <div className="home-feature glass-card">
-            <div className="home-feature-icon home-feature-icon--warm">
-              <Compass size={20} />
-            </div>
-            <div>
-              <h3 className="home-feature-title">AR Ethnomathematics</h3>
-              <p className="home-feature-desc">Scan objek untuk belajar geometri</p>
-            </div>
-          </div>
+        {/* Form card */}
+        <div className="landing-form-wrap animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
+          <FormSiswa onSubmit={handleFormSubmit} />
         </div>
 
-        {/* Form */}
-        <div className="home-form-section animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-          <FormSiswa onSubmit={handleFormSubmit} />
+        {/* Feature highlights */}
+        <div className="landing-features animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+          <div className="landing-feature">
+            <div className="landing-feature-icon">
+              <span className="material-symbols-outlined">map</span>
+            </div>
+            <span className="landing-feature-text">Peta Interaktif</span>
+          </div>
+          <div className="landing-feature">
+            <div className="landing-feature-icon">
+              <span className="material-symbols-outlined">calculate</span>
+            </div>
+            <span className="landing-feature-text">Matematika Menyenangkan</span>
+          </div>
+          <div className="landing-feature">
+            <div className="landing-feature-icon">
+              <span className="material-symbols-outlined">view_in_ar</span>
+            </div>
+            <span className="landing-feature-text">Pengalaman AR</span>
+          </div>
         </div>
       </div>
     </div>

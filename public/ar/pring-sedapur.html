@@ -269,27 +269,30 @@
     let hasSubmittedCorrect = false
 
     // === FETCH DATA ===
-    fetch('/data/locations.json')
+    fetch('/data/learningModules.json')
       .then(res => res.json())
       .then(all => {
-        checkpointData = all.find(item => item.id === CHECKPOINT_ID)
+        const studentLevel = sessionStorage.getItem('studentLevel') || 'SD'
+        checkpointData = all.find(item => item.culturalObjectId === CHECKPOINT_ID && item.level === studentLevel)
         if (!checkpointData) {
-          console.error('[MageMatika] Checkpoint tidak ditemukan di locations.json:', CHECKPOINT_ID)
+          console.error('[MageMatika] Modul tidak ditemukan di learningModules.json:', CHECKPOINT_ID, studentLevel)
+          document.querySelector('#quiz-question').textContent = 'Materi untuk jenjang ini belum tersedia di AR.'
           return
         }
         renderOverlay(checkpointData)
         setupQuiz(checkpointData)
       })
-      .catch(err => console.error('[MageMatika] Gagal load locations.json:', err))
+      .catch(err => console.error('[MageMatika] Gagal load learningModules.json:', err))
 
     // === RENDER OVERLAY A-Frame ===
     function renderOverlay(data) {
       const target = document.querySelector('#target')
+      const math = data.mathematicalConcept
 
-      if (data.shapeType === 'rectangle') {
+      if (math.shapeType === 'rectangle') {
         const plane = document.createElement('a-plane')
-        plane.setAttribute('width', data.dimensions.panjang / 100)
-        plane.setAttribute('height', data.dimensions.lebar / 100)
+        plane.setAttribute('width', math.dimensions.panjang / 100)
+        plane.setAttribute('height', math.dimensions.lebar / 100)
         plane.setAttribute('color', '#38bdf8')
         plane.setAttribute('opacity', '0.5')
         plane.setAttribute('material', 'side: double')
@@ -299,13 +302,14 @@
 
     // === SETUP QUIZ ===
     function setupQuiz(data) {
-      document.querySelector('#quiz-badge').textContent = data.materiMatematika
-      document.querySelector('#quiz-shape-info').textContent = data.name
+      const math = data.mathematicalConcept
+      document.querySelector('#quiz-badge').textContent = data.topic || data.title
+      document.querySelector('#quiz-shape-info').textContent = data.title
       document.querySelector('#quiz-question').textContent =
-        `Hitung luas bagian yang ditandai. Rumus: ${data.formula}`
+        `Hitung luas bagian yang ditandai. Rumus: ${math.formula}`
 
       const dimContainer = document.querySelector('#quiz-dimensions')
-      const dims = data.dimensions
+      const dims = math.dimensions
       Object.entries(dims).forEach(([key, val]) => {
         if (key === 'unit') return
         const chip = document.createElement('div')
@@ -348,17 +352,18 @@
         return
       }
 
-      const tolerance = Math.abs(checkpointData.correctAnswer) * 0.01
-      const isCorrect = Math.abs(userAnswer - checkpointData.correctAnswer) <= Math.max(tolerance, 0.5)
+      const math = checkpointData.mathematicalConcept
+      const tolerance = Math.abs(math.correctAnswer) * 0.01
+      const isCorrect = Math.abs(userAnswer - math.correctAnswer) <= Math.max(tolerance, 0.5)
 
       if (isCorrect) {
         feedback.className = 'correct'
         feedback.style.display = 'block'
-        feedback.textContent = `✅ Benar! Jawabannya ${checkpointData.correctAnswer} ${checkpointData.answerUnit}`
+        feedback.textContent = `✅ Benar! Jawabannya ${math.correctAnswer} ${math.answerUnit}`
         hasSubmittedCorrect = true
         submitBtn.disabled = true
         submitBtn.textContent = '✓ Selesai'
-        await submitScore(checkpointData.id, 100)
+        await submitScore(checkpointData.culturalObjectId, 100)
       } else {
         feedback.className = 'incorrect'
         feedback.style.display = 'block'

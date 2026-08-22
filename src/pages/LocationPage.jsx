@@ -1,16 +1,28 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { ChevronLeft, Info, Camera, BookOpen, Clock, AlertTriangle } from 'lucide-react'
-import { useLocations } from '../hooks/useLocations'
+import { useCulturalObjects, useLearningModules } from '../hooks/useContent.js'
+import { useStudentContext } from '../hooks/useStudentContext.js'
 import { useToast } from '../hooks/useToast.jsx'
 import './LocationPage.css'
 
 export default function LocationPage() {
   const { locationId } = useParams()
   const navigate = useNavigate()
-  const { locations, loading } = useLocations()
   const { showToast } = useToast()
+  
+  const { culturalObjects, loading: loadingObj } = useCulturalObjects()
+  const { studentLevel, isLoggedIn } = useStudentContext()
+  
+  const dest = culturalObjects.find(l => l.id === locationId)
 
-  if (loading) {
+  const { modules, loading: loadingMod } = useLearningModules({ 
+    level: studentLevel, 
+    culturalObjectId: locationId 
+  })
+  
+  const activeModule = modules.length > 0 ? modules[0] : null
+
+  if (loadingObj || loadingMod) {
     return (
       <div className="page-container location-page">
         <div className="location-loading">
@@ -20,8 +32,6 @@ export default function LocationPage() {
       </div>
     )
   }
-
-  const dest = locations.find(l => l.id === locationId)
 
   if (!dest) {
     return (
@@ -39,16 +49,17 @@ export default function LocationPage() {
   }
 
   const handleStartAR = () => {
-    // Pastikan user sudah login (isi form siswa)
-    const studentName = sessionStorage.getItem('studentName')
-    if (!studentName) {
+    if (!isLoggedIn) {
       showToast('⚠️ Silakan isi identitas di halaman utama dulu.')
       setTimeout(() => navigate('/'), 2000)
       return
     }
 
-    // Navigasi full page ke HTML statis AR (bukan via React Router)
-    window.location.href = dest.arCheckpointUrl
+    if (dest.ar && dest.ar.url) {
+      window.location.href = dest.ar.url
+    } else {
+      showToast('⚠️ Pengalaman AR belum tersedia untuk lokasi ini.')
+    }
   }
 
   return (
@@ -60,12 +71,8 @@ export default function LocationPage() {
       </header>
 
       <main className="location-content stagger-children">
-        {/* Banner */}
+        {/* Banner - Cultural Context */}
         <div className="location-banner glass-card">
-          <div className="location-badges">
-            <span className="badge badge-primary">{dest.materiMatematika}</span>
-            <span className="badge badge-secondary">{dest.jenjang}</span>
-          </div>
           <h1 className="location-title">{dest.name}</h1>
           <p className="location-subtitle">{dest.kecamatanName}</p>
         </div>
@@ -76,7 +83,7 @@ export default function LocationPage() {
           Mulai Kamera AR
         </button>
 
-        {/* Sejarah & Info */}
+        {/* Sejarah & Info - Cultural Context */}
         <div className="location-info glass-card">
           <div className="info-section">
             <h3 className="info-title">
@@ -84,21 +91,34 @@ export default function LocationPage() {
             </h3>
             <p className="info-text">{dest.history}</p>
           </div>
-          
+        </div>
+
+        {/* Misi Matematika - Educational Content */}
+        <div className="location-info glass-card">
           <div className="info-section">
             <h3 className="info-title">
-              <BookOpen size={16} /> Misi Matematika
+              <BookOpen size={16} /> Misi Matematika ({studentLevel})
             </h3>
-            <div className="misi-box">
-              <p>Di lokasi ini kamu akan mempelajari konsep <strong>{dest.materiMatematika}</strong>.</p>
-              <p>Arahkan kamera ke <strong>{dest.name}</strong> untuk memunculkan bentuk <code>{dest.shapeType}</code>.</p>
-            </div>
+            
+            {!activeModule ? (
+              <div className="misi-box empty-module">
+                <p>Materi untuk jenjang ini segera hadir.</p>
+              </div>
+            ) : (
+              <div className="misi-box">
+                <h4 style={{ margin: '0 0 8px 0', color: 'var(--color-primary)' }}>
+                  {activeModule.title}
+                </h4>
+                <p>Di lokasi ini kamu akan mempelajari konsep <strong>{activeModule.topic}</strong>.</p>
+                <p>Arahkan kamera ke <strong>{dest.name}</strong> untuk memunculkan representasi <code>{activeModule.mathematicalConcept?.shapeType}</code>.</p>
+              </div>
+            )}
           </div>
 
-          {dest.isPlaceholderData && (
+          {activeModule?.isPlaceholderData && (
             <div className="info-warning">
               <AlertTriangle size={14} />
-              <p>Data masih berupa placeholder (dummy).</p>
+              <p>Data pembelajaran ini masih berupa placeholder (dummy).</p>
             </div>
           )}
         </div>
