@@ -1,0 +1,179 @@
+/* === Challenge Card Styles === */
+
+.challenge-card {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.challenge-header {
+  background: var(--color-primary-container);
+  padding: var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-surface-variant);
+}
+
+.challenge-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-lg);
+  color: var(--color-on-primary-container);
+  font-weight: 700;
+}
+
+.challenge-icon {
+  color: var(--color-primary);
+}
+
+.challenge-badge {
+  background: var(--color-surface-variant);
+  color: var(--color-on-surface-variant);
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.challenge-body {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.challenge-question {
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--color-on-surface);
+  margin: 0;
+}
+
+.challenge-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-surface-container);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.input-group:focus-within {
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+}
+
+.challenge-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-size: var(--text-xl);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  color: var(--color-on-surface);
+  padding: var(--space-2) 0;
+  outline: none;
+  width: 100%;
+}
+
+.challenge-input::placeholder {
+  color: var(--color-on-surface-variant);
+  font-weight: 400;
+  font-size: var(--text-base);
+}
+
+.input-unit {
+  font-size: var(--text-lg);
+  color: var(--color-on-surface-variant);
+  font-weight: 600;
+  user-select: none;
+}
+
+.feedback-message {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.feedback-message p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.feedback-message.error {
+  background: #ffebee;
+  color: #c62828;
+  border-left: 4px solid #c62828;
+}
+
+.feedback-message.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-left: 4px solid #2e7d32;
+}
+
+.challenge-actions {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--space-2);
+}
+
+.challenge-actions .btn {
+  width: 100%;
+}
+
+/* Success State */
+.challenge-success-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-6) 0;
+  gap: var(--space-3);
+}
+
+.success-icon {
+  color: var(--color-secondary);
+}
+
+.challenge-success-state h4 {
+  font-size: var(--text-xl);
+  color: var(--color-on-surface);
+  margin: 0;
+}
+
+.challenge-success-state p {
+  color: var(--color-on-surface-variant);
+  margin: 0;
+}
+
+.xp-reward {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, var(--color-secondary), #ffd54f);
+  color: #5d4037;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: var(--text-lg);
+  box-shadow: 0 4px 12px rgba(255, 179, 0, 0.3);
+}

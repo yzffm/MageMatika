@@ -1,0 +1,74 @@
+[
+  {
+    "id": "tas-jali-jali-sd-challenge-01",
+    "learningModuleId": "tas-jali-jali-sd",
+    "level": "SD",
+    "type": "numeric",
+    "title": "Tantangan Luas Anyaman",
+    "question": "Sebuah lembaran anyaman Tas Jali-Jali memiliki panjang 30 cm dan lebar 20 cm. Berapakah luas permukaan lembaran anyaman tersebut?",
+    "answer": {
+      "value": 600,
+      "unit": "cm²",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 20
+    },
+    "enabled": true,
+    "isPlaceholderData": true
+  },
+  {
+    "id": "pring-sedapur-sd-challenge-01",
+    "learningModuleId": "pring-sedapur-sd",
+    "level": "SD",
+    "type": "numeric",
+    "title": "Tantangan Motif Bambu",
+    "question": "Sebuah bingkai motif Batik Pring Sedapur memiliki panjang 25 cm dan lebar 15 cm. Berapa luas area motif tersebut?",
+    "answer": {
+      "value": 375,
+      "unit": "cm²",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 20
+    },
+    "enabled": true,
+    "isPlaceholderData": true
+  },
+  {
+    "id": "gerabah-nguri-sd-challenge-01",
+    "learningModuleId": "gerabah-nguri-sd",
+    "level": "SD",
+    "type": "numeric",
+    "title": "Tantangan Volume Gerabah",
+    "question": "Sebuah Gerabah Nguri berbentuk tabung memiliki diameter 14 cm (jari-jari 7 cm) dan tinggi 20 cm. Berapakah volume maksimal gerabah tersebut? (Gunakan π ≈ 3.14159...)",
+    "answer": {
+      "value": 3078.76,
+      "unit": "cm³",
+      "tolerance": 0.1
+    },
+    "reward": {
+      "xp": 20
+    },
+    "enabled": true,
+    "isPlaceholderData": true
+  },
+  {
+    "id": "tas-jali-jali-smp-challenge-01",
+    "learningModuleId": "tas-jali-jali-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Luas Permukaan Balok",
+    "question": "Tas Jali-Jali dirangkai menyerupai bentuk balok dengan ukuran panjang 30 cm, lebar 20 cm, dan tinggi 15 cm. Berapakah luas total permukaan balok tersebut jika diasumsikan tertutup sempurna?",
+    "answer": {
+      "value": 2700,
+      "unit": "cm²",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 20
+    },
+    "enabled": true,
+    "isPlaceholderData": true
+  }
+]

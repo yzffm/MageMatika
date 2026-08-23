@@ -1,0 +1,108 @@
+/* === Mission Card Styles === */
+
+.mission-card {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  border: 1px solid var(--color-surface-variant);
+  overflow: hidden;
+}
+
+.mission-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border-color: var(--color-primary);
+}
+
+.mission-card:active {
+  transform: translateY(0);
+}
+
+.mission-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-variant);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.mission-topic {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--color-on-surface-variant);
+}
+
+.mission-reward {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #f57f17;
+  background: #fff8e1;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.mission-card-body {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.mission-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  color: var(--color-on-surface);
+  line-height: 1.3;
+}
+
+.mission-context {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-on-surface-variant);
+}
+
+.mission-card-footer {
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-surface-variant);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mission-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.mission-status.pending {
+  color: var(--color-primary);
+}
+
+.mission-status.success {
+  color: #2e7d32;
+}
+
+/* Completed State Styling */
+.mission-card--completed {
+  background: #f1f8f3;
+  border-color: #c8e6c9;
+}
+
+.mission-card--completed:hover {
+  border-color: #81c784;
+}
+
+.mission-card--completed .mission-card-header {
+  background: #e8f5e9;
+  border-bottom-color: #c8e6c9;
+}

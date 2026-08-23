@@ -1,0 +1,8 @@
+/* === Cuboid Surface Area Experience Styles === */
+
+/* Reuse base styles from RectangleAreaExperience and CylinderVolumeExperience */
+@import './CylinderVolumeExperience.css';
+
+.math-exp-cuboid .math-exp-sliders {
+  gap: var(--space-3);
+}

@@ -1,0 +1,36 @@
+/* === Cylinder Volume Experience Styles === */
+
+/* Reuse base styles from RectangleAreaExperience */
+@import './RectangleAreaExperience.css';
+
+.r3f-container {
+  padding: 0;
+  position: relative;
+  background: radial-gradient(circle at center, var(--color-surface-container-high) 0%, var(--color-surface-container-low) 100%);
+  cursor: grab;
+}
+
+.r3f-container:active {
+  cursor: grabbing;
+}
+
+.r3f-hint {
+  position: absolute;
+  bottom: var(--space-2);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+}
+
+.r3f-hint .material-symbols-outlined {
+  font-size: 14px;
+}

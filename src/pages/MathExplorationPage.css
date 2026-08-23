@@ -1,0 +1,21 @@
+/* === Math Exploration Page Styles === */
+
+.math-exploration-page {
+  padding-bottom: var(--space-8);
+}
+
+.math-header {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.math-loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  color: var(--color-on-surface-variant);
+  height: 50vh;
+}

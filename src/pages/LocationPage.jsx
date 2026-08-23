@@ -1,7 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { ChevronLeft, Info, Camera, BookOpen, Clock, AlertTriangle } from 'lucide-react'
+import { ChevronLeft, Info, Camera, BookOpen, Clock, AlertTriangle, Calculator, Trophy } from 'lucide-react'
 import { useCulturalObjects, useLearningModules } from '../hooks/useContent.js'
 import { useStudentContext } from '../hooks/useStudentContext.js'
+import { useChallenges } from '../hooks/useChallenges.js'
 import { useToast } from '../hooks/useToast.jsx'
 import './LocationPage.css'
 
@@ -21,6 +22,12 @@ export default function LocationPage() {
   })
   
   const activeModule = modules.length > 0 ? modules[0] : null
+
+  const { challenges } = useChallenges({
+    level: studentLevel,
+    learningModuleId: activeModule?.id
+  })
+  const activeChallenge = challenges.length > 0 ? challenges[0] : null
 
   if (loadingObj || loadingMod) {
     return (
@@ -76,6 +83,30 @@ export default function LocationPage() {
           <h1 className="location-title">{dest.name}</h1>
           <p className="location-subtitle">{dest.kecamatanName}</p>
         </div>
+
+        {/* Interactive Math Button */}
+        {activeModule?.interactiveExperience?.enabled && (
+          <button 
+            className="btn btn-secondary btn-large btn-math" 
+            onClick={() => navigate(`/math/${activeModule.id}`)}
+            style={{ marginBottom: '8px' }}
+          >
+            <Calculator size={20} />
+            Eksplorasi Matematika
+          </button>
+        )}
+
+        {/* Challenge Button */}
+        {activeChallenge && (
+          <button 
+            className="btn btn-secondary btn-large btn-challenge" 
+            onClick={() => navigate(`/challenge/${activeChallenge.id}`)}
+            style={{ marginBottom: '8px', background: 'var(--color-secondary)' }}
+          >
+            <Trophy size={20} />
+            Tantangan Matematika
+          </button>
+        )}
 
         {/* Action Button */}
         <button className="btn btn-primary btn-large btn-ar" onClick={handleStartAR}>

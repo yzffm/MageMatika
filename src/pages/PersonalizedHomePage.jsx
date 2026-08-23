@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useStudentContext, LEVEL_LABELS } from '../hooks/useStudentContext.js'
+import { useProgress } from '../hooks/useProgress.js'
 import './PersonalizedHomePage.css'
 
 /**
@@ -14,6 +15,7 @@ import './PersonalizedHomePage.css'
 export default function PersonalizedHomePage() {
   const navigate = useNavigate()
   const { studentName, studentLevel, studentClass, isLoggedIn } = useStudentContext()
+  const { totalXP } = useProgress()
 
   // Guard: redirect to onboarding if no session
   useEffect(() => {
@@ -42,7 +44,7 @@ export default function PersonalizedHomePage() {
         </div>
         <div className="home-xp-badge">
           <span className="material-symbols-outlined home-xp-icon">stars</span>
-          <span className="home-xp-text">0 XP</span>
+          <span className="home-xp-text">{totalXP} XP</span>
         </div>
       </header>
 
@@ -79,8 +81,7 @@ export default function PersonalizedHomePage() {
           </button>
           <button
             className="home-action-btn home-action-btn--secondary"
-            onClick={() => {/* Missions - coming soon */}}
-            disabled
+            onClick={() => navigate('/missions')}
           >
             Lihat Misi
           </button>
@@ -108,8 +109,14 @@ export default function PersonalizedHomePage() {
             <span className="material-symbols-outlined home-card-arrow">arrow_forward</span>
           </div>
 
-          {/* Missions — placeholder */}
-          <div className="home-card home-card--missions home-card--disabled">
+          {/* Missions */}
+          <div 
+            className="home-card home-card--missions"
+            onClick={() => navigate('/missions')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && navigate('/missions')}
+          >
             <div className="home-card-icon home-card-icon--secondary">
               <span className="material-symbols-outlined">task_alt</span>
             </div>
@@ -118,12 +125,18 @@ export default function PersonalizedHomePage() {
               <p className="home-card-desc">
                 Tantangan matematika berdasarkan jenjangmu
               </p>
-              <span className="home-card-coming">Segera Hadir</span>
             </div>
+            <span className="material-symbols-outlined home-card-arrow">arrow_forward</span>
           </div>
 
-          {/* Progress — placeholder */}
-          <div className="home-card home-card--progress home-card--disabled">
+          {/* Progress */}
+          <div 
+            className="home-card home-card--progress"
+            onClick={() => navigate('/progress')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && navigate('/progress')}
+          >
             <div className="home-card-icon home-card-icon--tertiary">
               <span className="material-symbols-outlined">trending_up</span>
             </div>
@@ -132,8 +145,8 @@ export default function PersonalizedHomePage() {
               <p className="home-card-desc">
                 XP, badge, dan perjalanan belajarmu
               </p>
-              <span className="home-card-coming">Segera Hadir</span>
             </div>
+            <span className="material-symbols-outlined home-card-arrow">arrow_forward</span>
           </div>
         </section>
 
@@ -158,11 +171,11 @@ export default function PersonalizedHomePage() {
           <span className="material-symbols-outlined">explore</span>
           <span className="home-nav-label">Explore</span>
         </button>
-        <button className="home-nav-item" disabled>
+        <button className="home-nav-item" onClick={() => navigate('/missions')}>
           <span className="material-symbols-outlined">task_alt</span>
           <span className="home-nav-label">Missions</span>
         </button>
-        <button className="home-nav-item" disabled>
+        <button className="home-nav-item" onClick={() => navigate('/progress')}>
           <span className="material-symbols-outlined">trending_up</span>
           <span className="home-nav-label">Progress</span>
         </button>
