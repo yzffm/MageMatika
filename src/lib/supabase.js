@@ -30,3 +30,28 @@ export async function insertProgress(payload) {
   }
   return { data, error }
 }
+
+/**
+ * Asynchronously persists challenge progress to the proposed VS6 schema.
+ * Note: If the 'challenge_progress' table does not exist or fails, this returns the error
+ * so the persistence adapter can handle it gracefully.
+ * 
+ * Uses an upsert or relies on a UNIQUE constraint to be idempotent.
+ */
+export async function insertChallengeProgress(payload) {
+  if (!supabase) {
+    return { data: null, error: new Error('Supabase not configured') }
+  }
+
+  // The proposed table relies on unique(student_name, student_class, challenge_id)
+  const { data, error } = await supabase
+    .from('challenge_progress')
+    .upsert(
+      [payload], 
+      { onConflict: 'student_name,student_class,challenge_id' }
+    )
+    .select()
+
+  return { data, error }
+}
+

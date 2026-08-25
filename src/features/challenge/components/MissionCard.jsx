@@ -17,10 +17,10 @@ export default function MissionCard({
   return (
     <div 
       className={`mission-card glass-card ${isCompleted ? 'mission-card--completed' : ''}`}
-      onClick={() => navigate(`/challenge/${challenge.id}`)}
+      onClick={() => navigate(`/challenge/${challenge.id}`, { state: { from: '/missions' } })}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && navigate(`/challenge/${challenge.id}`)}
+      onKeyDown={(e) => e.key === 'Enter' && navigate(`/challenge/${challenge.id}`, { state: { from: '/missions' } })}
     >
       <div className="mission-card-header">
         <span className="mission-topic">{moduleTopic}</span>

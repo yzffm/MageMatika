@@ -1,33 +1,18 @@
 import { useState, useCallback, useEffect } from 'react'
-
-const PROGRESS_KEY = 'magematika_progress'
-
-function readProgress() {
-  try {
-    const raw = sessionStorage.getItem(PROGRESS_KEY)
-    if (raw) {
-      return JSON.parse(raw)
-    }
-  } catch (err) {
-    console.error('[MageMatika] Failed to parse progress from sessionStorage:', err)
-  }
-  return {
-    totalXP: 0,
-    completedChallenges: [],
-    attempts: {}
-  }
-}
+import { persistenceAdapter } from '../domain/progress/persistenceAdapter'
+import { useStudentContext } from './useStudentContext'
 
 /**
  * Hook to manage student progress via sessionStorage.
  * Prepares the abstraction for future migration to a database without changing components.
  */
 export function useProgress() {
-  const [progress, setProgress] = useState(readProgress)
+  const [progress, setProgress] = useState(persistenceAdapter.loadLocalProgress)
+  const { studentName, studentClass, isLoggedIn } = useStudentContext()
 
-  // Sync state to storage whenever it changes
+  // Sync state to storage whenever it changes (local sync)
   useEffect(() => {
-    sessionStorage.setItem(PROGRESS_KEY, JSON.stringify(progress))
+    persistenceAdapter.saveLocalProgress(progress)
   }, [progress])
 
   const isChallengeCompleted = useCallback((challengeId) => {
@@ -59,17 +44,43 @@ export function useProgress() {
       }
 
       const currentAttempts = prev.attempts[challengeId] || 0
-      return {
+      
+      const nextProgress = {
         ...prev,
         totalXP: prev.totalXP + xpReward,
         completedChallenges: [...prev.completedChallenges, challengeId],
         attempts: {
           ...prev.attempts,
           [challengeId]: currentAttempts + 1
+        },
+        syncStatus: {
+          ...(prev.syncStatus || {}),
+          [challengeId]: 'syncing' // optimistic
         }
       }
+
+      // Fire-and-forget sync to Supabase (if we have identity context)
+      if (isLoggedIn) {
+        persistenceAdapter.syncChallengeToSupabase({
+          studentName,
+          studentClass,
+          challengeId,
+          xpAwarded: xpReward
+        }).then(result => {
+          // We can optionally update syncStatus here without disrupting local XP
+          setProgress(p => ({
+            ...p,
+            syncStatus: {
+              ...(p.syncStatus || {}),
+              [challengeId]: result.success ? 'synced' : 'failed'
+            }
+          }))
+        })
+      }
+
+      return nextProgress
     })
-  }, [])
+  }, [isLoggedIn, studentName, studentClass])
 
   return {
     totalXP: progress.totalXP,
@@ -77,6 +88,7 @@ export function useProgress() {
     isChallengeCompleted,
     getAttempts,
     recordAttempt,
-    completeChallenge
+    completeChallenge,
+    syncStatus: progress.syncStatus || {}
   }
 }

@@ -145,3 +145,23 @@
   gap: var(--space-4);
   color: var(--color-text-secondary);
 }
+
+.btn-challenge {
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
+  border: 2px solid var(--color-secondary);
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.btn-challenge:hover {
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}

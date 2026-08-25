@@ -99,9 +99,9 @@ export default function LocationPage() {
         {/* Challenge Button */}
         {activeChallenge && (
           <button 
-            className="btn btn-secondary btn-large btn-challenge" 
-            onClick={() => navigate(`/challenge/${activeChallenge.id}`)}
-            style={{ marginBottom: '8px', background: 'var(--color-secondary)' }}
+            className="btn btn-large btn-challenge" 
+            onClick={() => navigate(`/challenge/${activeChallenge.id}`, { state: { from: `/lokasi/${locationId}` } })}
+            style={{ marginBottom: '8px' }}
           >
             <Trophy size={20} />
             Tantangan Matematika

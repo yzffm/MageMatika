@@ -33,3 +33,14 @@ Vertical Slice 5 introduced the student-facing presentation of their progress.
   - Reads session-based XP and completion state from `useProgress()`.
   - Calculates completion denominator only against the *current level's available challenges*.
   - Visualizes completed challenges by mapping their IDs back through the same `Challenge -> Module -> Cultural Object` hierarchy.
+
+## Persistence & State Tracing (VS6)
+
+Vertical Slice 6 layered non-blocking persistence onto the Progress model:
+
+- **Local-First Authority (`sessionStorage`)**:
+  - `magematika_progress` remains the primary source of truth, avoiding duplicate XP logic and shielding the student from network failures.
+- **Optimistic Synchronization**:
+  - Pushes challenge completions to Supabase asynchronously using an idempotent `upsert` mechanism (checking `student_name`, `student_class`, `challenge_id`).
+- **Data Completeness limitation**:
+  - Persistent state in the proposed Supabase schema is bound to application identity (`studentName` + `studentClass`), *not* a secure authenticated identity, satisfying the VS6 audit requirement without breaking the current user session model.

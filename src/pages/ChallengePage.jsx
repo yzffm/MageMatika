@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { ChevronLeft, Info, MapPin } from 'lucide-react'
 import { useStudentContext } from '../hooks/useStudentContext'
 import { useChallenges } from '../hooks/useChallenges'
@@ -9,6 +9,7 @@ import './ChallengePage.css'
 export default function ChallengePage() {
   const { challengeId } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { studentLevel } = useStudentContext()
 
   // 1. Fetch Challenge Data
@@ -60,9 +61,12 @@ export default function ChallengePage() {
       <header className="page-header animate-fade-in-up">
         <button 
           className="btn btn-ghost" 
-          onClick={() => navigate(`/math/${targetChallenge.learningModuleId}`)}
+          onClick={() => {
+            const from = location.state?.from || `/math/${targetChallenge.learningModuleId}`
+            navigate(from)
+          }}
         >
-          <ChevronLeft size={18} /> Kembali ke Eksplorasi
+          <ChevronLeft size={18} /> {location.state?.from ? 'Kembali' : 'Kembali ke Eksplorasi'}
         </button>
       </header>
 
