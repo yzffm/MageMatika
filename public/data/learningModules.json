@@ -3,13 +3,20 @@
     "id": "tas-jali-jali-sd",
     "culturalObjectId": "tas-jali-jali",
     "level": "SD",
-    "gradeRange": [4, 6],
+    "gradeRange": [
+      4,
+      6
+    ],
     "topic": "Luas Persegi Panjang",
     "title": "Mengenal Luas lewat Anyaman",
     "isPlaceholderData": true,
     "mathematicalConcept": {
       "shapeType": "rectangle",
-      "dimensions": { "panjang": 30, "lebar": 20, "unit": "cm" },
+      "dimensions": {
+        "panjang": 30,
+        "lebar": 20,
+        "unit": "cm"
+      },
       "formula": "L = p × l",
       "correctAnswer": 600,
       "answerUnit": "cm²"
@@ -23,13 +30,20 @@
     "id": "pring-sedapur-sd",
     "culturalObjectId": "pring-sedapur",
     "level": "SD",
-    "gradeRange": [4, 6],
+    "gradeRange": [
+      4,
+      6
+    ],
     "topic": "Luas Persegi Panjang",
     "title": "Geometri pada Motif Bambu",
     "isPlaceholderData": true,
     "mathematicalConcept": {
       "shapeType": "rectangle",
-      "dimensions": { "panjang": 25, "lebar": 15, "unit": "cm" },
+      "dimensions": {
+        "panjang": 25,
+        "lebar": 15,
+        "unit": "cm"
+      },
       "formula": "L = p × l",
       "correctAnswer": 375,
       "answerUnit": "cm²"
@@ -43,13 +57,20 @@
     "id": "pragak-sd",
     "culturalObjectId": "pragak",
     "level": "SD",
-    "gradeRange": [4, 6],
+    "gradeRange": [
+      4,
+      6
+    ],
     "topic": "Luas Segitiga",
     "title": "Pola Segitiga Batik Pragak",
     "isPlaceholderData": true,
     "mathematicalConcept": {
       "shapeType": "triangle",
-      "dimensions": { "alas": 20, "tinggi": 15, "unit": "cm" },
+      "dimensions": {
+        "alas": 20,
+        "tinggi": 15,
+        "unit": "cm"
+      },
       "formula": "L = ½ × a × t",
       "correctAnswer": 150,
       "answerUnit": "cm²"
@@ -63,13 +84,20 @@
     "id": "gerabah-nguri-sd",
     "culturalObjectId": "gerabah-nguri",
     "level": "SD",
-    "gradeRange": [4, 6],
+    "gradeRange": [
+      4,
+      6
+    ],
     "topic": "Volume Tabung",
     "title": "Menghitung Kapasitas Gerabah",
     "isPlaceholderData": true,
     "mathematicalConcept": {
       "shapeType": "cylinder",
-      "dimensions": { "diameter": 14, "tinggi": 20, "unit": "cm" },
+      "dimensions": {
+        "diameter": 14,
+        "tinggi": 20,
+        "unit": "cm"
+      },
       "formula": "V = π × r² × t",
       "correctAnswer": 3078.76,
       "answerUnit": "cm³"
@@ -80,23 +108,462 @@
     }
   },
   {
-    "id": "tas-jali-jali-smp",
-    "culturalObjectId": "tas-jali-jali",
+    "id": "sentra-genteng-bata-smp",
+    "culturalObjectId": "sentra-genteng-bata",
     "level": "SMP",
-    "gradeRange": [7, 9],
-    "topic": "Luas Permukaan Balok",
-    "title": "Luas Permukaan Tas Jali-Jali",
-    "isPlaceholderData": true,
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Volume Balok",
+    "title": "Volume Batu Bata",
+    "isPlaceholderData": false,
     "mathematicalConcept": {
       "shapeType": "cuboid",
-      "dimensions": { "panjang": 30, "lebar": 20, "tinggi": 15, "unit": "cm" },
-      "formula": "L = 2(pl + pt + lt)",
-      "correctAnswer": 2700,
+      "dimensions": {
+        "panjang": 20,
+        "lebar": 10,
+        "tinggi": 5,
+        "unit": "cm"
+      },
+      "formula": "V = p × l × t",
+      "correctAnswer": 1000,
+      "answerUnit": "cm³"
+    },
+    "interactiveExperience": {
+      "type": "cuboid-volume",
+      "enabled": true
+    },
+    "content": "Batu bata memiliki panjang 20 cm, lebar 10 cm, dan tinggi 5 cm. Jika bentuknya disederhanakan, batu bata dapat dimodelkan sebagai balok. Volume balok dihitung dengan mengalikan panjang, lebar, dan tinggi."
+  },
+  {
+    "id": "batik-tanjung-smp",
+    "culturalObjectId": "batik-tanjung",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Transformasi Geometri: Translasi",
+    "title": "Translasi pada Batik Tanjung",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "pattern",
+      "formula": "Translasi (x, y)",
+      "correctAnswer": 8,
+      "answerUnit": "cm"
+    },
+    "interactiveExperience": {
+      "type": "transformation-2d",
+      "enabled": true,
+      "config": {
+        "mode": "translation"
+      }
+    },
+    "content": "Sebuah motif bunga dipindahkan dan diulang pada bagian kain. Jika motif pertama digeser ke sebelah kanan dengan jarak 8 cm, bentuk dan ukuran motif tetap sama. Kegiatan memindahkan motif ini disebut translasi atau pergeseran."
+  },
+  {
+    "id": "kerajinan-gamelan-smp",
+    "culturalObjectId": "kerajinan-gamelan",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Luas Lingkaran & Volume Tabung",
+    "title": "Matematika Alat Musik Gamelan",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "cylinder",
+      "dimensions": {
+        "diameter": 40,
+        "tinggi": 20,
+        "unit": "cm"
+      },
+      "formula": "L = π × r²",
+      "correctAnswer": 1256,
       "answerUnit": "cm²"
     },
     "interactiveExperience": {
-      "type": "cuboid-surface-area",
+      "type": "cylinder-volume",
       "enabled": true
-    }
+    },
+    "content": "Bagian gamelan yang berbentuk bulat dapat dimodelkan sebagai lingkaran. Jika sebuah bagian gamelan memiliki diameter 40 cm, maka jari-jarinya 20 cm. Luasnya = 3.14 × 20² = 1.256 cm²."
+  },
+  {
+    "id": "karawitan-karas-smp",
+    "culturalObjectId": "karawitan-karas",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Barisan Aritmetika",
+    "title": "Pola Bilangan Karawitan",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "sequence",
+      "formula": "Un = a + (n-1)b",
+      "correctAnswer": 20,
+      "answerUnit": "ketukan"
+    },
+    "interactiveExperience": {
+      "type": "arithmetic-sequence",
+      "enabled": true,
+      "config": {
+        "a": 15,
+        "b": 5
+      }
+    },
+    "content": "Pola jumlah ketukan dalam karawitan bertambah secara teratur: 2, 4, 6, 8, 10. Ini adalah barisan aritmetika dengan suku pertama (a) = 2 dan beda (b) = 2. Suku ke-10 adalah U10 = 2 + (10-1)2 = 20."
+  },
+  {
+    "id": "batik-sukowijoyo-smp",
+    "culturalObjectId": "batik-sukowijoyo",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Transformasi & Kekongruenan",
+    "title": "Geometri Batik Sukowijoyo",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "pattern",
+      "formula": "Refleksi dan Translasi",
+      "correctAnswer": 1,
+      "answerUnit": "pola"
+    },
+    "interactiveExperience": {
+      "type": "transformation-2d",
+      "enabled": true,
+      "config": {
+        "mode": "both"
+      }
+    },
+    "content": "Penyusunan motif Batik Sukowijoyo mengandung unsur translasi (pergeseran), refleksi (pencerminan garis), dan kekongruenan. Motif kiri dan kanan tampak seperti bayangan, menunjukkan simetri lipat."
+  },
+  {
+    "id": "batik-kepo-smp",
+    "culturalObjectId": "batik-kepo",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Transformasi Geometri",
+    "title": "Pergeseran Motif Batik KEPO",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "pattern",
+      "formula": "Translasi dan Kesebangunan",
+      "correctAnswer": 2,
+      "answerUnit": "rasio"
+    },
+    "interactiveExperience": {
+      "type": "transformation-2d",
+      "enabled": true,
+      "config": {
+        "mode": "translation"
+      }
+    },
+    "content": "Pada Batik KEPO, motif A digeser menjadi motif B. Jika diperbesar dengan perbandingan 2:1, panjang dan lebar berubah secara seragam, menunjukkan konsep kesebangunan."
+  },
+  {
+    "id": "gerabah-nguri-smp",
+    "culturalObjectId": "gerabah-nguri",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Volume Tabung",
+    "title": "Kapasitas Gerabah Nguri",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "cylinder",
+      "dimensions": {
+        "diameter": 14,
+        "tinggi": 20,
+        "unit": "cm"
+      },
+      "formula": "V = π × r² × t",
+      "correctAnswer": 3080,
+      "answerUnit": "cm³"
+    },
+    "interactiveExperience": {
+      "type": "cylinder-volume",
+      "enabled": true
+    },
+    "content": "Sebuah gerabah berdiameter 14 cm dan tinggi 20 cm. Jika dimodelkan sebagai tabung (π = 22/7), jari-jarinya 7 cm. Luas alas = 154 cm². Volumenya = 154 × 20 = 3.080 cm³."
+  },
+  {
+    "id": "kerajinan-kulit-magetan-smp",
+    "culturalObjectId": "kerajinan-kulit-magetan",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Luas Persegi Panjang",
+    "title": "Pola Kerajinan Kulit",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "rectangle",
+      "dimensions": {
+        "panjang": 30,
+        "lebar": 20,
+        "unit": "cm"
+      },
+      "formula": "L = p × l",
+      "correctAnswer": 600,
+      "answerUnit": "cm²"
+    },
+    "interactiveExperience": {
+      "type": "rectangle-area",
+      "enabled": true
+    },
+    "content": "Pengrajin memotong pola kulit berbentuk persegi panjang 30 cm × 20 cm. Luas pola adalah 30 × 20 = 600 cm²."
+  },
+  {
+    "id": "sendang-kamal-smp",
+    "culturalObjectId": "sendang-kamal",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Skala & Perbandingan",
+    "title": "Skala Denah Sendang Kamal",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "map",
+      "formula": "Jarak Denah = Jarak Asli ÷ Skala",
+      "correctAnswer": 20,
+      "answerUnit": "cm"
+    },
+    "interactiveExperience": {
+      "type": "map-scale",
+      "enabled": true,
+      "config": {
+        "scaleDenominator": 500,
+        "initialDistance": 5
+      }
+    },
+    "content": "Jarak antar objek di Sendang Kamal 20 meter (2.000 cm). Jika denah berskala 1 : 100, jarak di denah adalah 2.000 ÷ 100 = 20 cm."
+  },
+  {
+    "id": "kerajinan-kulit-ngariboyo-smp",
+    "culturalObjectId": "kerajinan-kulit-ngariboyo",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Kesebangunan",
+    "title": "Kesebangunan Pola Dompet",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "rectangle",
+      "formula": "p1:p2 = l1:l2",
+      "correctAnswer": 18,
+      "answerUnit": "cm"
+    },
+    "interactiveExperience": {
+      "type": "transformation-2d",
+      "enabled": true,
+      "config": {
+        "mode": "scaling"
+      }
+    },
+    "content": "Dompet pertama ukuran 20×12 cm. Dompet kedua diperbesar dengan panjang 30 cm (rasio 3:2). Lebar dompet kedua = 12 × 3/2 = 18 cm."
+  },
+  {
+    "id": "batik-udar-welingan-smp",
+    "culturalObjectId": "batik-udar-welingan",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Transformasi Geometri",
+    "title": "Transformasi Batik Udar Welingan",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "pattern",
+      "formula": "Translasi, Refleksi, Rotasi",
+      "correctAnswer": 1,
+      "answerUnit": "pola"
+    },
+    "interactiveExperience": {
+      "type": "transformation-2d",
+      "enabled": true,
+      "config": {
+        "mode": "translation"
+      }
+    },
+    "content": "Batik Udar Welingan memadukan translasi, pencerminan (refleksi), perputaran (rotasi), dan kesamaan bentuk (kekongruenan)."
+  },
+  {
+    "id": "batik-pari-memping-smp",
+    "culturalObjectId": "batik-pari-memping",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Kekongruenan",
+    "title": "Kekongruenan Batik Pari Memping",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "pattern",
+      "formula": "Bentuk & Ukuran Sama",
+      "correctAnswer": 24,
+      "answerUnit": "cm²"
+    },
+    "interactiveExperience": {
+      "type": "transformation-2d",
+      "enabled": true,
+      "config": {
+        "mode": "translation"
+      }
+    },
+    "content": "Motif A ukuran 6×4 cm. Motif B juga 6×4 cm dan bentuknya sama. Walaupun tempatnya beda, kedua motif adalah kongruen."
+  },
+  {
+    "id": "batik-parang-selo-smp",
+    "culturalObjectId": "batik-parang-selo",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Kesebangunan",
+    "title": "Kesebangunan Batik Parang Selo",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "pattern",
+      "formula": "Rasio Tetap",
+      "correctAnswer": 2,
+      "answerUnit": "skala"
+    },
+    "interactiveExperience": {
+      "type": "transformation-2d",
+      "enabled": true,
+      "config": {
+        "mode": "scaling"
+      }
+    },
+    "content": "Motif A 8×6 cm diperbesar menjadi motif B 16×12 cm. Perbandingannya tetap (16:8 = 2, 12:6 = 2), ini contoh kesebangunan."
+  },
+  {
+    "id": "pring-sedapur-smp",
+    "culturalObjectId": "pring-sedapur",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Transformasi Geometri",
+    "title": "Translasi Motif Bambu",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "pattern",
+      "formula": "Translasi",
+      "correctAnswer": 15,
+      "answerUnit": "cm"
+    },
+    "interactiveExperience": {
+      "type": "transformation-2d",
+      "enabled": true,
+      "config": {
+        "mode": "translation"
+      }
+    },
+    "content": "Motif bambu Pring Sedapur diletakkan 15 cm di sebelah kanan motif sebelumnya. Perubahan posisi tanpa ubah ukuran disebut translasi."
+  },
+  {
+    "id": "tenun-cileng-smp",
+    "culturalObjectId": "tenun-cileng",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Luas Persegi Panjang",
+    "title": "Luas Kain Tenun Cileng",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "rectangle",
+      "dimensions": {
+        "panjang": 120,
+        "lebar": 60,
+        "unit": "cm"
+      },
+      "formula": "L = p × l",
+      "correctAnswer": 7200,
+      "answerUnit": "cm²"
+    },
+    "interactiveExperience": {
+      "type": "rectangle-area",
+      "enabled": true
+    },
+    "content": "Pengrajin membuat tenun dengan ukuran panjang 120 cm dan lebar 60 cm. Luas kain tersebut adalah 7.200 cm²."
+  },
+  {
+    "id": "batik-sekar-lawu-smp",
+    "culturalObjectId": "batik-sekar-lawu",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Translasi",
+    "title": "Translasi Batik Sekar Lawu",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "pattern",
+      "formula": "Pergeseran 10 cm",
+      "correctAnswer": 10,
+      "answerUnit": "cm"
+    },
+    "interactiveExperience": {
+      "type": "transformation-2d",
+      "enabled": true,
+      "config": {
+        "mode": "translation"
+      }
+    },
+    "content": "Motif bunga pada Batik Sekar Lawu digeser 10 cm ke kanan secara berulang. Posisi berubah tapi ukuran dan bentuk tetap (translasi)."
+  },
+  {
+    "id": "jeruk-pamelo-smp",
+    "culturalObjectId": "jeruk-pamelo",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Statistika & Perbandingan",
+    "title": "Statistika Jeruk Pamelo",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "data",
+      "formula": "Rata-rata",
+      "correctAnswer": 1.8,
+      "answerUnit": "kg"
+    },
+    "interactiveExperience": {
+      "type": "statistics-average",
+      "enabled": true,
+      "config": {
+        "initialData": [
+          1.2,
+          1.5,
+          1.3
+        ]
+      }
+    },
+    "content": "Seorang petani mencatat berat pamelo: 1.5, 1.8, 2.0, 1.7, dan 2.0 kg. Total = 9 kg. Rata-rata = 9 / 5 = 1.8 kg."
   }
 ]

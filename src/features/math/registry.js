@@ -9,4 +9,9 @@ export const experienceRegistry = {
   'rectangle-area': lazy(() => import('./experiences/RectangleAreaExperience')),
   'cylinder-volume': lazy(() => import('./experiences/CylinderVolumeExperience')),
   'cuboid-surface-area': lazy(() => import('./experiences/CuboidSurfaceAreaExperience')),
+  'cuboid-volume': lazy(() => import('./experiences/CuboidVolumeExperience')),
+  'transformation-2d': lazy(() => import('./experiences/Transformation2DExperience')),
+  'arithmetic-sequence': lazy(() => import('./experiences/ArithmeticSequenceExperience')),
+  'statistics-average': lazy(() => import('./experiences/StatisticsAverageExperience')),
+  'map-scale': lazy(() => import('./experiences/MapScaleExperience')),
 }

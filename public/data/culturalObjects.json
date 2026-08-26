@@ -42,5 +42,125 @@
     "ar": {
       "url": "/ar/gerabah-nguri.html"
     }
+  },
+  {
+    "id": "sentra-genteng-bata",
+    "kecamatanId": "barat",
+    "kecamatanName": "Barat",
+    "name": "Sentra Genteng dan Batu Bata",
+    "shortDescription": "Kegiatan pembuatan genteng dan batu bata di Kecamatan Barat.",
+    "history": "Kecamatan Barat memiliki potensi industri pembuatan genteng dan batu bata yang terpusat di Desa Manjung, Bogorejo, Banjarejo, dan Karangsono. Proses pembuatannya memperhatikan ukuran dan bentuk, yang sangat berkaitan dengan matematika geometri seperti balok dan persegi panjang."
+  },
+  {
+    "id": "batik-tanjung",
+    "kecamatanId": "bendo",
+    "kecamatanName": "Bendo",
+    "name": "Batik Tanjung",
+    "shortDescription": "Batik dengan motif inspirasi bunga tanjung dari Desa Tanjung.",
+    "history": "Batik Tanjung dikembangkan melalui Omah Batik Tanjung di Kecamatan Bendo. Identitas lokal ini mengambil inspirasi dari bunga tanjung. Perajin menyusun motif dengan mengatur bentuk, jarak, dan posisi, yang merefleksikan konsep transformasi geometri seperti translasi."
+  },
+  {
+    "id": "kerajinan-gamelan",
+    "kecamatanId": "karangrejo",
+    "kecamatanName": "Karangrejo",
+    "name": "Kerajinan Gamelan",
+    "shortDescription": "Sentra kerajinan alat musik tradisional Jawa di Dusun Kidal.",
+    "history": "Di Desa Kauman, khususnya Dusun Kidal, Kecamatan Karangrejo, kerajinan gamelan dilakukan secara turun-temurun. Pembuatan gamelan menuntut ketelitian proporsi dan ukuran. Bentuk-bentuk pada gamelan dapat dimodelkan sebagai lingkaran dan tabung."
+  },
+  {
+    "id": "karawitan-karas",
+    "kecamatanId": "karas",
+    "kecamatanName": "Karas",
+    "name": "Karawitan Karas Ngesti Budoyo",
+    "shortDescription": "Kesenian musik tradisional gamelan yang harmonis.",
+    "history": "Kesenian karawitan dilestarikan oleh kelompok Karas Ngesti Budoyo di Kecamatan Karas. Susunan bunyi yang teratur dari berbagai instrumen membentuk pola irama. Keteraturan ketukan dan durasi permainan karawitan dapat dihubungkan dengan pola bilangan dan barisan aritmetika."
+  },
+  {
+    "id": "batik-sukowijoyo",
+    "kecamatanId": "kartoharjo",
+    "kecamatanName": "Kartoharjo",
+    "name": "Batik Sukowijoyo",
+    "shortDescription": "Batik tulis khas Desa Sukowidi.",
+    "history": "Batik Sukowijoyo dikelola oleh BUMDes Sentosa Abadi di Desa Sukowidi sejak 2019. Motif yang disusun dengan canting dan malam membentuk pola teratur. Proses pembuatannya sarat dengan konsep translasi, refleksi, dan kekongruenan."
+  },
+  {
+    "id": "batik-kepo",
+    "kecamatanId": "kawedanan",
+    "kecamatanName": "Kawedanan",
+    "name": "Batik KEPO",
+    "shortDescription": "Kreativitas Pondok dari Pesantren Subulus Syafi'in.",
+    "history": "Batik KEPO (Kreativitas Pondok) dikembangkan di lingkungan Pondok Pesantren Subulus Syafi'in, Kecamatan Kawedanan. Motifnya disusun secara berulang dan simetris, menampilkan konsep matematika seperti pergeseran (translasi) dan pencerminan (refleksi)."
+  },
+  {
+    "id": "kerajinan-kulit-magetan",
+    "kecamatanId": "magetan",
+    "kecamatanName": "Magetan",
+    "name": "Sentra Kerajinan Kulit",
+    "shortDescription": "Produk kerajinan kulit dari Jalan Sawo, Selosari.",
+    "history": "Di Jalan Sawo, Kelurahan Selosari, Kecamatan Magetan, terdapat sentra kerajinan kulit. Pengrajin membuat sepatu, tas, dan dompet. Sebelum kulit dipotong, pengrajin mengukur pola yang membentuk bangun datar seperti persegi panjang."
+  },
+  {
+    "id": "sendang-kamal",
+    "kecamatanId": "maospati",
+    "kecamatanName": "Maospati",
+    "name": "Manusuk Sima Sendang Kamal",
+    "shortDescription": "Petirtaan kuno peninggalan sejarah Mataram Kuno.",
+    "history": "Sendang Kamal di Kelurahan Kraton, Maospati adalah situs sejarah yang terkait dengan Prasasti Kawambang Kulwan. Pemetaan kawasan situs ini menggunakan prinsip skala, jarak, posisi, dan geometri."
+  },
+  {
+    "id": "kerajinan-kulit-ngariboyo",
+    "kecamatanId": "ngariboyo",
+    "kecamatanName": "Ngariboyo",
+    "name": "Sentra Kerajinan Kulit Ngariboyo",
+    "shortDescription": "Usaha kerajinan kulit di Banjarejo, Mojopurno, dan Balegondo.",
+    "history": "Masyarakat di Kecamatan Ngariboyo mengembangkan kerajinan kulit, seperti di Desa Banjarejo. Pembuatan pola produk dalam berbagai ukuran mempertahankan bentuk dasar, yang sangat erat kaitannya dengan perbandingan dan kesebangunan."
+  },
+  {
+    "id": "batik-udar-welingan",
+    "kecamatanId": "nguntoronadi",
+    "kecamatanName": "Nguntoronadi",
+    "name": "Batik Udar Welingan",
+    "shortDescription": "Batik bermotif tanaman kenanga dari Desa Kenongomulyo.",
+    "history": "Batik Udar Welingan di Desa Kenongomulyo terinspirasi dari tanaman kenanga. Motifnya disusun melalui translasi, refleksi, rotasi, dan kekongruenan untuk membentuk keindahan pola yang sarat akan makna budaya."
+  },
+  {
+    "id": "batik-pari-memping",
+    "kecamatanId": "panekan",
+    "kecamatanName": "Panekan",
+    "name": "Batik Tulis Pari Memping Kuning",
+    "shortDescription": "Batik motif padi yang menggambarkan masyarakat agraris.",
+    "history": "Batik ini berasal dari Kecamatan Panekan dan mengangkat unsur padi (pari) sebagai inspirasi utamanya. Pengulangan motifnya yang teratur pada kain memperlihatkan prinsip pola, translasi, dan simetri."
+  },
+  {
+    "id": "batik-parang-selo",
+    "kecamatanId": "parang",
+    "kecamatanName": "Parang",
+    "name": "Batik Parang Selo",
+    "shortDescription": "Batik khas Desa Pragak bermotif lingkungan sekitar.",
+    "history": "Batik Parang Selo dibuat oleh masyarakat Desa Pragak, Parang. Nama 'selo' berarti batu. Motifnya yang beragam (Sekar Jati, Mas Kumambang, dsb.) menuntut ketelitian posisi dan perbandingan yang mencerminkan transformasi geometri."
+  },
+  {
+    "id": "tenun-cileng",
+    "kecamatanId": "poncol",
+    "kecamatanName": "Poncol",
+    "name": "Tenun Tradisional Desa Cileng",
+    "shortDescription": "Kerajinan kain tenun langka dari Desa Cileng.",
+    "history": "Tenun tradisional di Desa Cileng, Poncol, dibuat dengan menyusun dan menyilangkan benang secara teratur. Proses penentuan panjang, lebar, dan pola benang mencakup perhitungan luas dan barisan bilangan."
+  },
+  {
+    "id": "batik-sekar-lawu",
+    "kecamatanId": "sidorejo",
+    "kecamatanName": "Sidorejo",
+    "name": "Batik Sekar Lawu",
+    "shortDescription": "Batik bermotif bunga di lereng Gunung Lawu.",
+    "history": "Batik Sekar Lawu dari Desa Sidomulyo terinspirasi dari bunga-bunga seperti mawar yang tumbuh di lereng Gunung Lawu. Motifnya disusun rapi melalui translasi dan kesebangunan."
+  },
+  {
+    "id": "jeruk-pamelo",
+    "kecamatanId": "sukomoro",
+    "kecamatanName": "Sukomoro",
+    "name": "Jeruk Pamelo",
+    "shortDescription": "Komoditas buah ikonik berukuran besar dari Magetan.",
+    "history": "Jeruk pamelo adalah ikon Kabupaten Magetan yang banyak dibudidayakan di Sukomoro (Desa Pojoksari dan Tambak Mas). Pengukuran ukuran dan berat jeruk pamelo saat panen dapat dipelajari menggunakan statistika dan perbandingan."
   }
 ]

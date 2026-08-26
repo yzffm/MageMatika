@@ -54,21 +54,309 @@
     "isPlaceholderData": true
   },
   {
-    "id": "tas-jali-jali-smp-challenge-01",
-    "learningModuleId": "tas-jali-jali-smp",
+    "id": "sentra-genteng-bata-smp-ch",
+    "learningModuleId": "sentra-genteng-bata-smp",
     "level": "SMP",
     "type": "numeric",
-    "title": "Tantangan Luas Permukaan Balok",
-    "question": "Tas Jali-Jali dirangkai menyerupai bentuk balok dengan ukuran panjang 30 cm, lebar 20 cm, dan tinggi 15 cm. Berapakah luas total permukaan balok tersebut jika diasumsikan tertutup sempurna?",
+    "title": "Tantangan Volume Batu Bata",
+    "question": "Pengrajin membuat batu bata dengan panjang 20 cm, lebar 10 cm, dan tinggi 5 cm. Berapa cm³ volume satu batu bata?",
     "answer": {
-      "value": 2700,
+      "value": 1000,
+      "unit": "cm³",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 30
+    },
+    "enabled": true,
+    "isPlaceholderData": false
+  },
+  {
+    "id": "batik-tanjung-smp-ch",
+    "learningModuleId": "batik-tanjung-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Jarak Translasi",
+    "question": "Motif bunga Tanjung digeser secara teratur. Jika jarak antara motif pertama dan kedua adalah 8 cm, pada jarak berapakah letak motif ketiga dari motif pertama?",
+    "answer": {
+      "value": 16,
+      "unit": "cm",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 30
+    },
+    "enabled": true,
+    "isPlaceholderData": false
+  },
+  {
+    "id": "kerajinan-gamelan-smp-ch",
+    "learningModuleId": "kerajinan-gamelan-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Luas Gamelan",
+    "question": "Sebuah bagian gamelan memiliki diameter 40 cm. Berapakah luas penampang bagian tersebut? (Gunakan π = 3.14)",
+    "answer": {
+      "value": 1256,
       "unit": "cm²",
+      "tolerance": 1
+    },
+    "reward": {
+      "xp": 30
+    },
+    "enabled": true,
+    "isPlaceholderData": false
+  },
+  {
+    "id": "karawitan-karas-smp-ch",
+    "learningModuleId": "karawitan-karas-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Pola Ketukan",
+    "question": "Pola ketukan membentuk barisan: 2, 4, 6, 8, ... Berapakah jumlah ketukan pada urutan ke-10?",
+    "answer": {
+      "value": 20,
+      "unit": "ketukan",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 40
+    },
+    "enabled": true,
+    "isPlaceholderData": false
+  },
+  {
+    "id": "batik-sukowijoyo-smp-ch",
+    "learningModuleId": "batik-sukowijoyo-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Kekongruenan",
+    "question": "Pada Batik Sukowijoyo, sebuah motif memiliki panjang 6 cm. Berapa panjang motif bayangannya (hasil refleksi) jika bentuk dan ukurannya tetap dipertahankan?",
+    "answer": {
+      "value": 6,
+      "unit": "cm",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 25
+    },
+    "enabled": true,
+    "isPlaceholderData": false
+  },
+  {
+    "id": "batik-kepo-smp-ch",
+    "learningModuleId": "batik-kepo-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Kesebangunan",
+    "question": "Sebuah motif berukuran lebar 6 cm. Pengrajin memperbesarnya dengan rasio 2:1. Berapa lebar motif yang baru?",
+    "answer": {
+      "value": 12,
+      "unit": "cm",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 35
+    },
+    "enabled": true,
+    "isPlaceholderData": false
+  },
+  {
+    "id": "gerabah-nguri-smp-ch",
+    "learningModuleId": "gerabah-nguri-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Volume Gerabah",
+    "question": "Gerabah di Desa Nguri memiliki tinggi 30 cm dan luas alas 154 cm². Berapa cm³ volume gerabah tersebut?",
+    "answer": {
+      "value": 4620,
+      "unit": "cm³",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 40
+    },
+    "enabled": true,
+    "isPlaceholderData": false
+  },
+  {
+    "id": "kerajinan-kulit-magetan-smp-ch",
+    "learningModuleId": "kerajinan-kulit-magetan-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Kebutuhan Kulit",
+    "question": "Seorang pengrajin butuh memotong pola tas persegi panjang berukuran 30x20 cm. Jika ia butuh 2 bagian, berapa total luas kulit yang digunakan (tanpa sisa)?",
+    "answer": {
+      "value": 1200,
+      "unit": "cm²",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 30
+    },
+    "enabled": true,
+    "isPlaceholderData": false
+  },
+  {
+    "id": "sendang-kamal-smp-ch",
+    "learningModuleId": "sendang-kamal-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Skala Denah",
+    "question": "Jarak asli 16 meter (1600 cm). Jika denah berskala 1 : 200, berapakah jarak pada denah dalam satuan cm?",
+    "answer": {
+      "value": 8,
+      "unit": "cm",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 35
+    },
+    "enabled": true,
+    "isPlaceholderData": false
+  },
+  {
+    "id": "kerajinan-kulit-ngariboyo-smp-ch",
+    "learningModuleId": "kerajinan-kulit-ngariboyo-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Kesebangunan Pola",
+    "question": "Pola dompet A ukurannya panjang 20 cm dan lebar 12 cm. Pola dompet B sebangun dengan panjang 30 cm. Berapa lebar pola dompet B?",
+    "answer": {
+      "value": 18,
+      "unit": "cm",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 40
+    },
+    "enabled": true,
+    "isPlaceholderData": false
+  },
+  {
+    "id": "batik-udar-welingan-smp-ch",
+    "learningModuleId": "batik-udar-welingan-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Transformasi",
+    "question": "Jika sebuah motif diputar 90 derajat lalu diputar lagi 90 derajat searah jarum jam, total perputarannya adalah berapa derajat?",
+    "answer": {
+      "value": 180,
+      "unit": "derajat",
       "tolerance": 0
     },
     "reward": {
       "xp": 20
     },
     "enabled": true,
-    "isPlaceholderData": true
+    "isPlaceholderData": false
+  },
+  {
+    "id": "batik-pari-memping-smp-ch",
+    "learningModuleId": "batik-pari-memping-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Simetri",
+    "question": "Sebuah motif padi simetris dilipat tepat di tengah. Jika lebar total motif 4 cm, berapa lebar setiap bagian setelah dilipat?",
+    "answer": {
+      "value": 2,
+      "unit": "cm",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 20
+    },
+    "enabled": true,
+    "isPlaceholderData": false
+  },
+  {
+    "id": "batik-parang-selo-smp-ch",
+    "learningModuleId": "batik-parang-selo-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Rasio",
+    "question": "Jika perbandingan skala dari motif A ke motif B adalah 2:1, dan luas motif A adalah 100 cm², berapa luas motif B? (Petunjuk: rasio luas adalah kuadrat rasio sisi)",
+    "answer": {
+      "value": 400,
+      "unit": "cm²",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 50
+    },
+    "enabled": true,
+    "isPlaceholderData": false
+  },
+  {
+    "id": "pring-sedapur-smp-ch",
+    "learningModuleId": "pring-sedapur-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Pengulangan",
+    "question": "Jarak antar 2 motif bambu berurutan adalah 15 cm. Berapa jarak dari motif pertama ke motif keempat?",
+    "answer": {
+      "value": 45,
+      "unit": "cm",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 30
+    },
+    "enabled": true,
+    "isPlaceholderData": false
+  },
+  {
+    "id": "tenun-cileng-smp-ch",
+    "learningModuleId": "tenun-cileng-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Luas Kain",
+    "question": "Sebuah kain tenun panjangnya 120 cm dan lebar 60 cm. Berapakah luas kain tersebut?",
+    "answer": {
+      "value": 7200,
+      "unit": "cm²",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 30
+    },
+    "enabled": true,
+    "isPlaceholderData": false
+  },
+  {
+    "id": "batik-sekar-lawu-smp-ch",
+    "learningModuleId": "batik-sekar-lawu-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Translasi Bunga",
+    "question": "Motif mawar diletakkan pada posisi awal x=5 cm. Jika ditranslasikan 10 cm ke kanan, pada posisi x berapakah motif tersebut sekarang?",
+    "answer": {
+      "value": 15,
+      "unit": "cm",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 25
+    },
+    "enabled": true,
+    "isPlaceholderData": false
+  },
+  {
+    "id": "jeruk-pamelo-smp-ch",
+    "learningModuleId": "jeruk-pamelo-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Rata-rata Pamelo",
+    "question": "Berat 5 buah pamelo masing-masing: 1.5, 1.8, 2.0, 1.7, dan 2.0 kg. Berapakah rata-rata berat jeruk pamelo tersebut?",
+    "answer": {
+      "value": 1.8,
+      "unit": "kg",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 35
+    },
+    "enabled": true,
+    "isPlaceholderData": false
   }
 ]
