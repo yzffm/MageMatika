@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useStudentContext, LEVEL_LABELS } from '../hooks/useStudentContext.js'
 import { useProgress } from '../hooks/useProgress.js'
+import BottomNav from '../components/BottomNav.jsx'
 import './PersonalizedHomePage.css'
 
 /**
@@ -14,15 +15,26 @@ import './PersonalizedHomePage.css'
  */
 export default function PersonalizedHomePage() {
   const navigate = useNavigate()
-  const { studentName, studentLevel, studentClass, isLoggedIn } = useStudentContext()
+  const { studentName, studentLevel, studentClass, isLoggedIn, isLoading, clearStudent } = useStudentContext()
   const { totalXP } = useProgress()
 
-  // Guard: redirect to onboarding if no session
+  // Guard: redirect to onboarding if no session (wait for auth check first)
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isLoading && !isLoggedIn) {
       navigate('/', { replace: true })
     }
-  }, [isLoggedIn, navigate])
+  }, [isLoggedIn, isLoading, navigate])
+
+  if (isLoading) {
+    return (
+      <div className="home-page">
+        <div className="home-texture" />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+          <div className="loading-spinner" />
+        </div>
+      </div>
+    )
+  }
 
   if (!isLoggedIn) return null
 
@@ -37,7 +49,7 @@ export default function PersonalizedHomePage() {
       {/* Top app bar */}
       <header className="home-topbar">
         <div className="home-topbar-left">
-          <div className="home-avatar">
+          <div className="home-avatar" onClick={async () => { await clearStudent(); navigate('/') }} role="button" tabIndex={0} title="Keluar">
             <span className="material-symbols-outlined">person</span>
           </div>
           <h1 className="home-brand">MageMatika</h1>
@@ -162,24 +174,7 @@ export default function PersonalizedHomePage() {
       </main>
 
       {/* Bottom navigation */}
-      <nav className="home-bottomnav">
-        <button className="home-nav-item home-nav-item--active" onClick={() => navigate('/home')}>
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>home</span>
-          <span className="home-nav-label">Home</span>
-        </button>
-        <button className="home-nav-item" onClick={() => navigate('/peta')}>
-          <span className="material-symbols-outlined">explore</span>
-          <span className="home-nav-label">Explore</span>
-        </button>
-        <button className="home-nav-item" onClick={() => navigate('/missions')}>
-          <span className="material-symbols-outlined">task_alt</span>
-          <span className="home-nav-label">Missions</span>
-        </button>
-        <button className="home-nav-item" onClick={() => navigate('/progress')}>
-          <span className="material-symbols-outlined">trending_up</span>
-          <span className="home-nav-label">Progress</span>
-        </button>
-      </nav>
+      <BottomNav />
     </div>
   )
 }

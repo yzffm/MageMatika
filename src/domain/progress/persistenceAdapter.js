@@ -1,16 +1,19 @@
-import { insertChallengeProgress } from '../../lib/supabase'
+import { syncChallengeProgress, loadChallengeProgress } from '../../lib/supabase'
 
 /**
  * Adapter for managing progress persistence.
- * Enforces Local-First Authority: sessionStorage is the source of truth.
- * Supabase synchronization is optional, async, and non-blocking.
+ * 
+ * VS8: Now uses Supabase Auth-linked tables.
+ * - sessionStorage remains as a fast local cache for immediate UI updates.
+ * - Supabase is the source of truth for cross-session persistence.
+ * - Progress is loaded from Supabase on session restore.
  */
 
 const PROGRESS_KEY = 'magematika_progress'
 
 export const persistenceAdapter = {
   /**
-   * Reads progress from local sessionStorage.
+   * Reads progress from local sessionStorage (fast cache).
    */
   loadLocalProgress: () => {
     try {
@@ -37,33 +40,41 @@ export const persistenceAdapter = {
   },
 
   /**
-   * Asynchronously attempts to push a challenge completion to Supabase.
+   * Loads progress from Supabase for the authenticated student.
+   * Used on session restore to hydrate local state.
+   * 
+   * @param {string} studentId - Supabase auth UUID
+   * @returns {Promise<{ totalXP: number, completedChallenges: string[] }>}
+   */
+  loadRemoteProgress: async (studentId) => {
+    if (!studentId) {
+      return { totalXP: 0, completedChallenges: [] }
+    }
+    return await loadChallengeProgress(studentId)
+  },
+
+  /**
+   * Syncs a single challenge completion to Supabase.
    * Fire-and-forget from the UI's perspective.
    * 
-   * @param {Object} payload 
-   * @param {string} payload.studentName
-   * @param {string} payload.studentClass
-   * @param {string} payload.challengeId
-   * @param {number} payload.xpAwarded
+   * @param {{ studentId: string, challengeId: string, xpAwarded: number }} payload
    * @returns {Promise<{success: boolean, error: any}>}
    */
   syncChallengeToSupabase: async (payload) => {
+    if (!payload.studentId) {
+      console.warn('[MageMatika] No studentId for sync. Local progress retained.')
+      return { success: false, error: new Error('No authenticated student') }
+    }
+
     try {
-      const { data, error } = await insertChallengeProgress({
-        student_name: payload.studentName,
-        student_class: payload.studentClass,
-        challenge_id: payload.challengeId,
-        xp_awarded: payload.xpAwarded
+      const result = await syncChallengeProgress({
+        studentId: payload.studentId,
+        challengeId: payload.challengeId,
+        xpAwarded: payload.xpAwarded
       })
-
-      if (error) {
-        console.warn(`[MageMatika] Persistence sync failed for ${payload.challengeId}. Local progress retained. Reason:`, error.message || error)
-        return { success: false, error }
-      }
-
-      return { success: true, data }
+      return result
     } catch (err) {
-      console.warn(`[MageMatika] Persistence sync caught exception for ${payload.challengeId}. Local progress retained. Reason:`, err)
+      console.warn(`[MageMatika] Persistence sync caught exception for ${payload.challengeId}:`, err)
       return { success: false, error: err }
     }
   }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { User, GraduationCap, School, ArrowRight } from 'lucide-react'
+import { User, GraduationCap, School, ArrowRight, Loader } from 'lucide-react'
 import { GRADE_RANGES } from '../hooks/useStudentContext.js'
 import './FormSiswa.css'
 
@@ -8,12 +8,16 @@ import './FormSiswa.css'
  *
  * Fields: Nama Lengkap, Jenjang (SD/SMP/SMA), Kelas (dynamic based on jenjang).
  * Calls onSubmit({ name, level, kelas }) on valid submission.
+ * 
+ * VS8: onSubmit is now async (Supabase auth). The form shows a loading
+ * state while the auth call is in progress.
  */
 export default function FormSiswa({ onSubmit }) {
   const [name, setName] = useState(() => sessionStorage.getItem('studentName') || '')
   const [level, setLevel] = useState(() => sessionStorage.getItem('studentLevel') || '')
   const [kelas, setKelas] = useState(() => sessionStorage.getItem('studentClass') || '')
   const [errors, setErrors] = useState({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const availableGrades = level && GRADE_RANGES[level] ? GRADE_RANGES[level] : []
 
@@ -33,7 +37,7 @@ export default function FormSiswa({ onSubmit }) {
     return newErrors
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const newErrors = validate()
     if (Object.keys(newErrors).length > 0) {
@@ -41,7 +45,12 @@ export default function FormSiswa({ onSubmit }) {
       return
     }
     setErrors({})
-    onSubmit?.({ name: name.trim(), level, kelas })
+    setIsSubmitting(true)
+    try {
+      await onSubmit?.({ name: name.trim(), level, kelas })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -70,6 +79,7 @@ export default function FormSiswa({ onSubmit }) {
             if (errors.name) setErrors(prev => ({ ...prev, name: undefined }))
           }}
           autoComplete="name"
+          disabled={isSubmitting}
         />
         {errors.name && <span className="form-error">{errors.name}</span>}
       </div>
@@ -95,6 +105,7 @@ export default function FormSiswa({ onSubmit }) {
                 ].join(' ')}
                 onClick={() => handleLevelChange(j)}
                 aria-pressed={isActive}
+                disabled={isSubmitting}
               >
                 <span className="form-jenjang-label">{j}</span>
                 {isSMA && <span className="form-jenjang-badge">Segera Hadir</span>}
@@ -126,6 +137,7 @@ export default function FormSiswa({ onSubmit }) {
                   if (errors.kelas) setErrors(prev => ({ ...prev, kelas: undefined }))
                 }}
                 aria-pressed={kelas === String(grade)}
+                disabled={isSubmitting}
               >
                 {grade}
               </button>
@@ -135,9 +147,23 @@ export default function FormSiswa({ onSubmit }) {
         </div>
       )}
 
-      <button type="submit" className="form-submit-btn" id="btn-mulai">
-        Mulai Jelajah
-        <ArrowRight size={18} />
+      <button 
+        type="submit" 
+        className="form-submit-btn" 
+        id="btn-mulai"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? (
+          <>
+            <Loader size={18} className="spin-animation" />
+            Menyiapkan...
+          </>
+        ) : (
+          <>
+            Mulai Jelajah
+            <ArrowRight size={18} />
+          </>
+        )}
       </button>
     </form>
   )

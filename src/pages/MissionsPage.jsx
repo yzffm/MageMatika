@@ -7,17 +7,18 @@ import { useCulturalObjects, useLearningModules } from '../hooks/useContent'
 import { useProgress } from '../hooks/useProgress'
 import { getCompletedChallengesForLevel } from '../domain/progress/calculations'
 import MissionCard from '../features/challenge/components/MissionCard'
+import BottomNav from '../components/BottomNav.jsx'
 import './MissionsPage.css'
 
 export default function MissionsPage() {
   const navigate = useNavigate()
-  const { studentLevel, isLoggedIn } = useStudentContext()
+  const { studentLevel, isLoggedIn, isLoading: isAuthLoading } = useStudentContext()
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isAuthLoading && !isLoggedIn) {
       navigate('/', { replace: true })
     }
-  }, [isLoggedIn, navigate])
+  }, [isLoggedIn, isAuthLoading, navigate])
 
   const { challenges, loading: loadingChallenges } = useChallenges({ level: studentLevel })
   const { modules, loading: loadingModules } = useLearningModules()
@@ -97,6 +98,7 @@ export default function MissionsPage() {
           )}
         </section>
       </main>
+      <BottomNav />
     </div>
   )
 }

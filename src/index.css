@@ -392,3 +392,43 @@ ul, ol {
   background: var(--color-outline);
   border-radius: var(--radius-full);
 }
+
+/* --- Global Loading Spinner --- */
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(56, 189, 248, 0.2);
+  border-top-color: var(--color-primary, #38bdf8);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spin-animation {
+  animation: spin 1s linear infinite;
+}
+
+/* --- Auth Error --- */
+.landing-auth-error {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(220, 38, 38, 0.15);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  color: #fca5a5;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  max-width: 440px;
+  margin: 0 auto 1rem;
+}
+
+.landing-auth-error .material-symbols-outlined {
+  font-size: 1.25rem;
+  color: #f87171;
+  flex-shrink: 0;
+}

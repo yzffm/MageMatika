@@ -11,6 +11,7 @@ import { ChevronLeft, MapPin, Lock } from 'lucide-react'
 import { useCulturalObjects } from '../hooks/useContent.js'
 import { useToast } from '../hooks/useToast.jsx'
 import geojsonData from '../data/magetan-kecamatan.json'
+import BottomNav from '../components/BottomNav.jsx'
 
 import './MapPage.css'
 
@@ -956,6 +957,7 @@ export default function MapPage() {
         )}
 
       </div>
+      <BottomNav />
     </div>
   )
 }

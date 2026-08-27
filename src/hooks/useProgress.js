@@ -3,17 +3,56 @@ import { persistenceAdapter } from '../domain/progress/persistenceAdapter'
 import { useStudentContext } from './useStudentContext'
 
 /**
- * Hook to manage student progress via sessionStorage.
- * Prepares the abstraction for future migration to a database without changing components.
+ * Hook to manage student progress.
+ * 
+ * VS8: Hydrates from Supabase on session restore, then uses
+ * local-first optimistic updates for immediate UI responsiveness.
  */
 export function useProgress() {
   const [progress, setProgress] = useState(persistenceAdapter.loadLocalProgress)
-  const { studentName, studentClass, isLoggedIn } = useStudentContext()
+  const [isHydrated, setIsHydrated] = useState(false)
+  const { studentId, isLoggedIn, isLoading: isAuthLoading } = useStudentContext()
 
-  // Sync state to storage whenever it changes (local sync)
+  // Sync state to sessionStorage whenever it changes
   useEffect(() => {
     persistenceAdapter.saveLocalProgress(progress)
   }, [progress])
+
+  // Hydrate progress from Supabase when auth is ready and we have a studentId
+  useEffect(() => {
+    if (isAuthLoading || !studentId || isHydrated) return
+
+    let cancelled = false
+
+    async function hydrateFromSupabase() {
+      try {
+        const remote = await persistenceAdapter.loadRemoteProgress(studentId)
+        if (cancelled) return
+
+        if (remote.completedChallenges.length > 0 || remote.totalXP > 0) {
+          setProgress(prev => {
+            // Merge: remote is source of truth, but don't lose local attempts
+            const mergedChallenges = Array.from(new Set([
+              ...remote.completedChallenges,
+              ...prev.completedChallenges
+            ]))
+            return {
+              ...prev,
+              totalXP: Math.max(remote.totalXP, prev.totalXP),
+              completedChallenges: mergedChallenges,
+            }
+          })
+        }
+      } catch (err) {
+        console.warn('[MageMatika] Failed to hydrate progress from Supabase:', err)
+      } finally {
+        if (!cancelled) setIsHydrated(true)
+      }
+    }
+
+    hydrateFromSupabase()
+    return () => { cancelled = true }
+  }, [studentId, isAuthLoading, isHydrated])
 
   const isChallengeCompleted = useCallback((challengeId) => {
     return progress.completedChallenges.includes(challengeId)
@@ -55,19 +94,17 @@ export function useProgress() {
         },
         syncStatus: {
           ...(prev.syncStatus || {}),
-          [challengeId]: 'syncing' // optimistic
+          [challengeId]: 'syncing'
         }
       }
 
-      // Fire-and-forget sync to Supabase (if we have identity context)
-      if (isLoggedIn) {
+      // Fire-and-forget sync to Supabase
+      if (studentId) {
         persistenceAdapter.syncChallengeToSupabase({
-          studentName,
-          studentClass,
+          studentId,
           challengeId,
           xpAwarded: xpReward
         }).then(result => {
-          // We can optionally update syncStatus here without disrupting local XP
           setProgress(p => ({
             ...p,
             syncStatus: {
@@ -80,7 +117,7 @@ export function useProgress() {
 
       return nextProgress
     })
-  }, [isLoggedIn, studentName, studentClass])
+  }, [studentId])
 
   return {
     totalXP: progress.totalXP,

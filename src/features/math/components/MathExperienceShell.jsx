@@ -27,13 +27,20 @@ export default function MathExperienceShell({ culturalObject, moduleData, childr
       </header>
 
       <main className="math-shell-content stagger-children">
-        {/* Cultural Context Header */}
-        <div className="math-shell-banner glass-card">
-          <div className="math-shell-badge">
-            Eksplorasi Matematika {moduleData.level}
+        {/* Cultural Context Hero Image */}
+        <div className="math-shell-hero glass-card" style={{ padding: 0, overflow: 'hidden', position: 'relative', borderRadius: '16px', marginBottom: '1rem', border: 'none' }}>
+          <img 
+            src={culturalObject.image || '/images/default-culture.png'} 
+            alt={culturalObject.name} 
+            style={{ width: '100%', height: '180px', objectFit: 'cover', display: 'block' }}
+          />
+          <div className="math-shell-hero-overlay" style={{ position: 'absolute', inset: 0, padding: '1.5rem', background: 'linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.4) 70%, transparent 100%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+            <div className="math-shell-badge" style={{ alignSelf: 'flex-start', marginBottom: '0.75rem', background: 'var(--color-primary)', color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+              Eksplorasi Matematika {moduleData.level}
+            </div>
+            <h1 className="math-shell-title" style={{ color: 'white', margin: 0, fontSize: '1.5rem', fontWeight: '800', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{culturalObject.name}</h1>
+            <p className="math-shell-subtitle" style={{ color: 'rgba(255, 255, 255, 0.9)', margin: '0.25rem 0 0 0', fontSize: '0.9rem', fontWeight: '500' }}>Materi: {moduleData.topic}</p>
           </div>
-          <h1 className="math-shell-title">{culturalObject.name}</h1>
-          <p className="math-shell-subtitle">Materi: {moduleData.topic}</p>
         </div>
 
         {/* Framing Section */}

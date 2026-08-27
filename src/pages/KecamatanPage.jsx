@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { ChevronLeft, MapPin, BookOpen, GraduationCap } from 'lucide-react'
 import { useCulturalObjects } from '../hooks/useContent.js'
+import BottomNav from '../components/BottomNav.jsx'
 import './KecamatanPage.css'
 
 export default function KecamatanPage() {
@@ -59,6 +60,7 @@ export default function KecamatanPage() {
           ))
         )}
       </main>
+      <BottomNav />
     </div>
   )
 }

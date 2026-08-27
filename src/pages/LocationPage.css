@@ -2,7 +2,7 @@
 
 .location-page {
   gap: var(--space-4);
-  padding-bottom: var(--space-8);
+  padding-bottom: 80px; /* space for bottom nav */
 }
 
 .location-header {

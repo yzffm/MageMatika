@@ -6,17 +6,18 @@ import { useChallenges } from '../hooks/useChallenges'
 import { useCulturalObjects, useLearningModules } from '../hooks/useContent'
 import { useProgress } from '../hooks/useProgress'
 import { getCompletedChallengesForLevel, calculateCompletionPercentage } from '../domain/progress/calculations'
+import BottomNav from '../components/BottomNav.jsx'
 import './ProgressPage.css'
 
 export default function ProgressPage() {
   const navigate = useNavigate()
-  const { studentLevel, isLoggedIn } = useStudentContext()
+  const { studentLevel, isLoggedIn, isLoading: isAuthLoading } = useStudentContext()
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isAuthLoading && !isLoggedIn) {
       navigate('/', { replace: true })
     }
-  }, [isLoggedIn, navigate])
+  }, [isLoggedIn, isAuthLoading, navigate])
 
   const { challenges, loading: loadingChallenges } = useChallenges({ level: studentLevel })
   const { modules, loading: loadingModules } = useLearningModules()
@@ -121,6 +122,7 @@ export default function ProgressPage() {
           )}
         </section>
       </main>
+      <BottomNav />
     </div>
   )
 }

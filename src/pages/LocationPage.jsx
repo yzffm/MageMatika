@@ -4,6 +4,7 @@ import { useCulturalObjects, useLearningModules } from '../hooks/useContent.js'
 import { useStudentContext } from '../hooks/useStudentContext.js'
 import { useChallenges } from '../hooks/useChallenges.js'
 import { useToast } from '../hooks/useToast.jsx'
+import BottomNav from '../components/BottomNav.jsx'
 import './LocationPage.css'
 
 export default function LocationPage() {
@@ -25,7 +26,7 @@ export default function LocationPage() {
 
   const { challenges } = useChallenges({
     level: studentLevel,
-    learningModuleId: activeModule?.id
+    learningModuleId: activeModule ? activeModule.id : 'NONE'
   })
   const activeChallenge = challenges.length > 0 ? challenges[0] : null
 
@@ -78,10 +79,27 @@ export default function LocationPage() {
       </header>
 
       <main className="location-content stagger-children">
-        {/* Banner - Cultural Context */}
-        <div className="location-banner glass-card">
-          <h1 className="location-title">{dest.name}</h1>
-          <p className="location-subtitle">{dest.kecamatanName}</p>
+        {/* Hero Image - Cultural Context */}
+        <div className="location-hero glass-card" style={{ padding: 0, overflow: 'hidden', position: 'relative', borderRadius: '16px', marginBottom: '1rem', border: 'none' }}>
+          <img 
+            src={dest.image || '/images/default-culture.png'} 
+            alt={dest.name} 
+            style={{ width: '100%', height: '220px', objectFit: 'cover', display: 'block' }}
+          />
+          <div className="location-hero-overlay" style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '1.5rem', background: 'linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.5) 60%, transparent 100%)' }}>
+            <h1 className="location-title" style={{ color: 'white', margin: 0, fontSize: '1.75rem', fontWeight: '800', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{dest.name}</h1>
+            <p className="location-subtitle" style={{ color: 'rgba(255, 255, 255, 0.9)', margin: '0.25rem 0 0 0', fontSize: '1rem', fontWeight: '500' }}>{dest.kecamatanName}</p>
+          </div>
+        </div>
+
+        {/* Sejarah & Info - Cultural Context */}
+        <div className="location-info glass-card" style={{ marginBottom: '1rem' }}>
+          <div className="info-section">
+            <h3 className="info-title">
+              <Clock size={16} /> Sejarah Singkat
+            </h3>
+            <p className="info-text">{dest.history}</p>
+          </div>
         </div>
 
         {/* Interactive Math Button */}
@@ -97,7 +115,7 @@ export default function LocationPage() {
         )}
 
         {/* Challenge Button */}
-        {activeChallenge && (
+        {activeModule && activeChallenge && (
           <button 
             className="btn btn-large btn-challenge" 
             onClick={() => navigate(`/challenge/${activeChallenge.id}`, { state: { from: `/lokasi/${locationId}` } })}
@@ -109,20 +127,10 @@ export default function LocationPage() {
         )}
 
         {/* Action Button */}
-        <button className="btn btn-primary btn-large btn-ar" onClick={handleStartAR}>
+        <button className="btn btn-primary btn-large btn-ar" onClick={handleStartAR} style={{ marginBottom: '1rem' }}>
           <Camera size={20} />
           Mulai Kamera AR
         </button>
-
-        {/* Sejarah & Info - Cultural Context */}
-        <div className="location-info glass-card">
-          <div className="info-section">
-            <h3 className="info-title">
-              <Clock size={16} /> Sejarah Singkat
-            </h3>
-            <p className="info-text">{dest.history}</p>
-          </div>
-        </div>
 
         {/* Misi Matematika - Educational Content */}
         <div className="location-info glass-card">
@@ -154,6 +162,7 @@ export default function LocationPage() {
           )}
         </div>
       </main>
+      <BottomNav />
     </div>
   )
 }
