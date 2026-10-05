@@ -30,7 +30,7 @@ export default function KecamatanPage() {
     <div className="page-container kecamatan-page">
       <header className="kecamatan-header animate-fade-in-up">
         <button className="btn btn-ghost" onClick={() => navigate('/peta')}>
-          <ChevronLeft size={18} /> Peta
+          <ChevronLeft size={18} /> Kembali
         </button>
         <div>
           <h1 className="kecamatan-title">Kecamatan {kecamatanName}</h1>
