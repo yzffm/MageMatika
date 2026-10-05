@@ -202,6 +202,7 @@ export function useStudentContext() {
     clearLocalSession()
     // Also clear progress from sessionStorage
     sessionStorage.removeItem('magematika_progress')
+    sessionStorage.removeItem('hasSeenWelcome')
     setSession({ studentId: '', studentName: '', studentLevel: '', studentClass: '' })
     setAuthError(null)
   }, [])

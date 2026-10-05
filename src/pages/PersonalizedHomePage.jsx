@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useStudentContext, LEVEL_LABELS } from '../hooks/useStudentContext.js'
 import { useProgress } from '../hooks/useProgress.js'
 import BottomNav from '../components/BottomNav.jsx'
+import SplashScreen from '../components/SplashScreen.jsx'
 import './PersonalizedHomePage.css'
 
 /**
@@ -17,6 +18,7 @@ export default function PersonalizedHomePage() {
   const navigate = useNavigate()
   const { studentName, studentLevel, studentClass, isLoggedIn, isLoading, clearStudent } = useStudentContext()
   const { totalXP } = useProgress()
+  const [showWelcomeSplash, setShowWelcomeSplash] = useState(() => !sessionStorage.getItem('hasSeenWelcome'))
 
   // Guard: redirect to onboarding if no session (wait for auth check first)
   useEffect(() => {
@@ -25,33 +27,44 @@ export default function PersonalizedHomePage() {
     }
   }, [isLoggedIn, isLoading, navigate])
 
-  if (isLoading) {
-    return (
-      <div className="home-page">
-        <div className="home-bg" aria-hidden="true" />
-        <div className="home-texture" />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-          <div className="loading-spinner" />
-        </div>
+  // Extract loading UI to a variable so we can wrap it with Splash
+  const renderLoading = () => (
+    <div className="home-page">
+      <div className="home-bg" aria-hidden="true" />
+      <div className="home-texture" />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <div className="loading-spinner" />
       </div>
-    )
-  }
+    </div>
+  )
 
-  if (!isLoggedIn) return null
+  if (!isLoading && !isLoggedIn) return null
 
   const levelLabel = LEVEL_LABELS[studentLevel] || studentLevel
   const firstName = studentName.split(' ')[0]
 
   return (
-    <div className="home-page">
-      {/* Latar ilustrasi Gunung Lawu (dekoratif) */}
-      <div className="home-bg" aria-hidden="true" />
+    <>
+      {showWelcomeSplash && (
+        <SplashScreen 
+          subtitle={`Selamat Datang, ${firstName}! Mempersiapkan petualangan matematikamu...`} 
+          onFinish={() => {
+            sessionStorage.setItem('hasSeenWelcome', 'true')
+            setShowWelcomeSplash(false)
+          }} 
+        />
+      )}
 
-      {/* Texture overlay for organic feel */}
-      <div className="home-texture" />
+      {isLoading ? renderLoading() : (
+        <div className="home-page">
+          {/* Latar ilustrasi Gunung Lawu (dekoratif) */}
+          <div className="home-bg" aria-hidden="true" />
 
-      {/* Top app bar */}
-      <header className="home-topbar">
+          {/* Texture overlay for organic feel */}
+          <div className="home-texture" />
+
+          {/* Top app bar */}
+          <header className="home-topbar">
         <div className="home-topbar-left">
           <div className="home-avatar" onClick={async () => { await clearStudent(); navigate('/') }} role="button" tabIndex={0} title="Keluar">
             <span className="material-symbols-outlined">person</span>
@@ -177,8 +190,10 @@ export default function PersonalizedHomePage() {
         )}
       </main>
 
-      {/* Bottom navigation */}
-      <BottomNav />
-    </div>
+          {/* Bottom navigation */}
+          <BottomNav />
+        </div>
+      )}
+    </>
   )
 }

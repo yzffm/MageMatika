@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
 import { useCulturalObjects, useLearningModules } from '../hooks/useContent.js'
+import { useChallenges } from '../hooks/useChallenges.js'
 import { useStudentContext } from '../hooks/useStudentContext.js'
 import MathExperienceShell from '../features/math/components/MathExperienceShell.jsx'
 import MathExperienceRenderer from '../features/math/components/MathExperienceRenderer.jsx'
@@ -15,8 +16,9 @@ export default function MathExplorationPage() {
   
   // We fetch all modules to find the specific one by ID
   const { modules, loading: loadingMod } = useLearningModules()
+  const { challenges, loading: loadingChall } = useChallenges({ learningModuleId: moduleId })
   
-  if (loadingObj || loadingMod) {
+  if (loadingObj || loadingMod || loadingChall) {
     return (
       <div className="page-container math-exploration-page">
         <div className="math-loading">
@@ -61,9 +63,14 @@ export default function MathExplorationPage() {
   }
 
   const culturalObject = culturalObjects.find(c => c.id === moduleData.culturalObjectId)
+  const challengeId = challenges.length > 0 ? challenges[0].id : null
 
   return (
-    <MathExperienceShell culturalObject={culturalObject} moduleData={moduleData}>
+    <MathExperienceShell 
+      culturalObject={culturalObject} 
+      moduleData={moduleData}
+      challengeId={challengeId}
+    >
       <MathExperienceRenderer moduleData={moduleData} />
     </MathExperienceShell>
   )

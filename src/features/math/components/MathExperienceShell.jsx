@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, Info, AlertTriangle } from 'lucide-react'
+import { ChevronLeft, Info, AlertTriangle, ArrowRight, Lightbulb } from 'lucide-react'
 import './MathExperienceShell.css'
 
 /**
  * Shell component for all math experiences.
  * Provides the shared layout, cultural context header, and 'Di Mana Letak Matematikanya?' framing.
  */
-export default function MathExperienceShell({ culturalObject, moduleData, children }) {
+export default function MathExperienceShell({ culturalObject, moduleData, challengeId, children }) {
   const navigate = useNavigate()
 
   if (!culturalObject || !moduleData) {
@@ -67,6 +67,21 @@ export default function MathExperienceShell({ culturalObject, moduleData, childr
         <div className="math-shell-interactive">
           {children}
         </div>
+
+        {/* Call to Action: Mulai Tantangan */}
+        {challengeId && (
+          <div className="math-cta-section animate-fade-in-up" style={{ marginTop: '1.5rem', marginBottom: '2rem' }}>
+            <button 
+              className="btn btn-primary btn-large cta-button pulse-animation" 
+              style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', padding: '16px', color: 'var(--color-on-primary)', background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 100%)', boxShadow: '0 4px 15px rgba(27, 67, 50, 0.4)' }}
+              onClick={() => navigate(`/challenge/${challengeId}`)}
+            >
+              <Lightbulb size={20} />
+              Uji Pemahamanmu (Mulai Tantangan)
+              <ArrowRight size={20} />
+            </button>
+          </div>
+        )}
       </main>
     </div>
   )

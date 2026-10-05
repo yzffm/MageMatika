@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStudentContext } from '../hooks/useStudentContext.js'
 import FormSiswa from '../components/FormSiswa.jsx'
+import SplashScreen from '../components/SplashScreen.jsx'
 import './HomePage.css'
 
 /**
@@ -14,6 +15,7 @@ import './HomePage.css'
 export default function HomePage() {
   const navigate = useNavigate()
   const { isLoggedIn, isLoading, authError, saveStudent } = useStudentContext()
+  const [showSplash, setShowSplash] = useState(true)
 
   // If student already logged in (session restored), redirect to personalized home
   useEffect(() => {
@@ -22,34 +24,41 @@ export default function HomePage() {
     }
   }, [isLoggedIn, isLoading, navigate])
 
-  // Show loading spinner while checking for existing Supabase session
-  if (isLoading) {
-    return (
-      <div className="landing-page">
-        <div className="landing-bg" />
-        <div className="landing-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-          <div style={{ textAlign: 'center' }}>
-            <div className="loading-spinner" />
-            <p style={{ color: 'white', marginTop: '1rem', opacity: 0.8 }}>Memulihkan sesi...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (isLoggedIn) {
-    return null
-  }
-
   const handleFormSubmit = async ({ name, level, kelas }) => {
     await saveStudent({ name, level, kelas })
     navigate('/home')
   }
 
-  return (
+  // If loading and not showing splash, show spinner (though splash usually covers this)
+  const renderLoading = () => (
     <div className="landing-page">
-      {/* Gradient background with organic orbs */}
       <div className="landing-bg" />
+      <div className="landing-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div className="loading-spinner" />
+          <p style={{ color: 'white', marginTop: '1rem', opacity: 0.8 }}>Memulihkan sesi...</p>
+        </div>
+      </div>
+    </div>
+  )
+
+  if (!isLoading && isLoggedIn) return null
+
+
+
+  return (
+    <>
+      {showSplash && (
+        <SplashScreen 
+          subtitle="Membuka Gerbang Magetan..." 
+          onFinish={() => setShowSplash(false)} 
+        />
+      )}
+      
+      {isLoading ? renderLoading() : (
+        <div className="landing-page">
+          {/* Gradient background with organic orbs */}
+          <div className="landing-bg" />
       <div className="landing-orb landing-orb--1" />
       <div className="landing-orb landing-orb--2" />
 
@@ -95,8 +104,10 @@ export default function HomePage() {
             </div>
             <span className="landing-feature-text">Pengalaman AR</span>
           </div>
+          </div>
         </div>
       </div>
-    </div>
+      )}
+    </>
   )
 }
