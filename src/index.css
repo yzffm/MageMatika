@@ -60,6 +60,13 @@
   --color-success: #2e7d32;
   --color-warning: #f59e0b;
 
+  /* Legacy aliases — dipakai halaman lama (Kecamatan, Lokasi, Math, dll) */
+  --color-text-primary: var(--color-on-surface);
+  --color-text-secondary: var(--color-on-surface-variant);
+  --color-text-muted: #6b726d;
+  --color-border: var(--color-outline-variant);
+  --color-accent-primary: var(--color-secondary);
+
   /* Map Colors — keep compatible with existing map */
   --color-map-active: #1b4332;
   --color-map-active-hover: #274e3d;
