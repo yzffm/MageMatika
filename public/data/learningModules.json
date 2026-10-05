@@ -565,5 +565,37 @@
       }
     },
     "content": "Seorang petani mencatat berat pamelo: 1.5, 1.8, 2.0, 1.7, dan 2.0 kg. Total = 9 kg. Rata-rata = 9 / 5 = 1.8 kg."
+  },
+  {
+    "id": "batik-kepuhrejo-smp",
+    "culturalObjectId": "batik-kepuhrejo",
+    "level": "SMP",
+    "gradeRange": [
+      7,
+      9
+    ],
+    "topic": "Translasi, Kekongruenan, & Kesebangunan",
+    "title": "Geometri Motif Kacang Tanah",
+    "isPlaceholderData": false,
+    "mathematicalConcept": {
+      "shapeType": "pattern",
+      "formula": "Translasi, Kekongruenan, Kesebangunan",
+      "correctAnswer": 2,
+      "answerUnit": "kali"
+    },
+    "interactiveExperience": {
+      "type": "transformation-2d",
+      "enabled": true,
+      "config": {
+        "mode": "both"
+      }
+    },
+    "content": "Motif kacang tanah digeser 8 cm ke kanan secara berulang (translasi). Motif berukuran 6 cm × 4 cm yang dibuat dengan bentuk dan ukuran sama bersifat kongruen. Motif 12 cm × 8 cm adalah 2 kali motif 6 cm × 4 cm dengan bentuk tetap, sehingga sebangun.",
+    "learningSections": [
+      {
+        "title": "Yuk, Hubungkan dengan Budaya!",
+        "text": "Ketika melihat Batik Kepuhrejo, kita mungkin pertama-tama akan memperhatikan motif kacang tanah yang menjadi ciri khasnya. Motif tersebut tidak hanya menggambarkan hasil pertanian yang dekat dengan kehidupan masyarakat Desa Kepuhrejo, tetapi juga dapat kita amati dari sisi matematika.\n\nKetika motif kacang tanah diulang dan dipindahkan, kita dapat mengamati translasi. Ketika beberapa motif memiliki bentuk dan ukuran yang sama, kita dapat melihat kekongruenan. Ketika sebuah motif dibuat lebih besar atau lebih kecil dengan perubahan ukuran yang tetap sebanding, kita dapat mengamati kesebangunan.\n\nBatik Kepuhrejo → motif kacang tanah → pengulangan motif → pergeseran posisi → kesamaan bentuk dan ukuran → perubahan ukuran secara proporsional.\n\nAwalnya kita mungkin hanya melihat motif kacang tanah sebagai bagian dari keindahan Batik Kepuhrejo. Setelah diamati lebih dekat, ternyata susunan motif, posisi, bentuk, dan ukurannya dapat membantu kita memahami konsep matematika.\n\nMenarik, bukan? Dari batik yang terinspirasi oleh potensi Desa Kepuhrejo, kita dapat melihat bahwa matematika juga hadir dalam karya budaya masyarakat di sekitar kita."
+      }
+    ]
   }
 ]

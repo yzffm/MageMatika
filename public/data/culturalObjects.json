@@ -181,5 +181,15 @@
     "shortDescription": "Komoditas buah ikonik berukuran besar dari Magetan.",
     "history": "Jeruk pamelo adalah ikon Kabupaten Magetan yang banyak dibudidayakan di Sukomoro (Desa Pojoksari dan Tambak Mas). Pengukuran ukuran dan berat jeruk pamelo saat panen dapat dipelajari menggunakan statistika dan perbandingan.",
     "image": "/images/jeruk-pamelo.png"
+  },
+  {
+    "id": "batik-kepuhrejo",
+    "kecamatanId": "takeran",
+    "kecamatanName": "Takeran",
+    "name": "Batik Kepuhrejo",
+    "shortDescription": "Batik khas Desa Kepuhrejo dengan motif kacang tanah.",
+    "history": "Di Desa Kepuhrejo, Kecamatan Takeran, Kabupaten Magetan, terdapat batik khas yang dikenal sebagai Batik Kepuhrejo. Batik ini diperkenalkan sebagai salah satu karya yang mengangkat potensi lokal Desa Kepuhrejo. Salah satu motif utamanya adalah motif kacang tanah, yang dipilih karena kacang tanah menjadi salah satu hasil pertanian yang banyak dibudidayakan di wilayah tersebut.\nMenariknya, motif kacang tanah pada Batik Kepuhrejo tidak hanya dapat kita lihat sebagai hiasan pada kain. Jika diamati lebih dekat, bentuk, ukuran, posisi, dan pengulangannya dapat kita gunakan untuk menemukan berbagai hal yang berkaitan dengan matematika.",
+    "image": "/images/default-culture.png",
+    "isPlaceholderMedia": true
   }
 ]

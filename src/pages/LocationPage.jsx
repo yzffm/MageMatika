@@ -98,9 +98,21 @@ export default function LocationPage() {
             <h3 className="info-title">
               <Clock size={16} /> Sejarah Singkat
             </h3>
-            <p className="info-text">{dest.history}</p>
+            <p className="info-text" style={{ whiteSpace: 'pre-line' }}>{dest.history}</p>
           </div>
         </div>
+
+        {/* Level-specific learning sections (optional) */}
+        {activeModule?.learningSections?.map(section => (
+          <div key={section.title} className="location-info glass-card" style={{ marginBottom: '1rem' }}>
+            <div className="info-section">
+              <h3 className="info-title">
+                <BookOpen size={16} /> {section.title}
+              </h3>
+              <p className="info-text" style={{ whiteSpace: 'pre-line' }}>{section.text}</p>
+            </div>
+          </div>
+        ))}
 
         {/* Interactive Math Button */}
         {activeModule?.interactiveExperience?.enabled && (

@@ -358,5 +358,23 @@
     },
     "enabled": true,
     "isPlaceholderData": false
+  },
+  {
+    "id": "batik-kepuhrejo-smp-ch",
+    "learningModuleId": "batik-kepuhrejo-smp",
+    "level": "SMP",
+    "type": "numeric",
+    "title": "Tantangan Kesebangunan Motif",
+    "question": "Motif kacang tanah pada Batik Kepuhrejo berukuran panjang 6 cm dan lebar 4 cm. Motif tersebut dibuat lebih besar dengan panjang 12 cm dan bentuk tetap sebangun. Berapa cm lebar motif yang lebih besar?",
+    "answer": {
+      "value": 8,
+      "unit": "cm",
+      "tolerance": 0
+    },
+    "reward": {
+      "xp": 35
+    },
+    "enabled": true,
+    "isPlaceholderData": false
   }
 ]
