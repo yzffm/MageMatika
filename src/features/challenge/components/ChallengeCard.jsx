@@ -1,11 +1,33 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CheckCircle, XCircle, Trophy, Lightbulb, Home, List } from 'lucide-react'
+import { CheckCircle, XCircle, Trophy, Lightbulb, Home, List, MapPin, Compass } from 'lucide-react'
 import { evaluateNumericAnswer } from '../../../domain/challenge/evaluator'
 import { useProgress } from '../../../hooks/useProgress'
 import './ChallengeCard.css'
 
-export default function ChallengeCard({ challenge }) {
+// Peta kecamatan terdekat untuk setiap kecamatan (hardcoded untuk simplifikasi)
+const NEAREST_KECAMATAN = {
+  "poncol": { id: "parang", name: "Parang" },
+  "ngariboyo": { id: "magetan", name: "Magetan" },
+  "kawedanan": { id: "nguntoronadi", name: "Nguntoronadi" },
+  "karangrejo": { id: "barat", name: "Barat" },
+  "sukomoro": { id: "magetan", name: "Magetan" },
+  "barat": { id: "karangrejo", name: "Karangrejo" },
+  "panekan": { id: "magetan", name: "Magetan" },
+  "magetan": { id: "sidorejo", name: "Sidorejo" },
+  "kartoharjo": { id: "barat", name: "Barat" },
+  "bendo": { id: "takeran", name: "Takeran" },
+  "plaosan": { id: "poncol", name: "Poncol" },
+  "karas": { id: "maospati", name: "Maospati" },
+  "parang": { id: "poncol", name: "Poncol" },
+  "sidorejo": { id: "magetan", name: "Magetan" },
+  "nguntoronadi": { id: "kawedanan", name: "Kawedanan" },
+  "lembeyan": { id: "parang", name: "Parang" },
+  "takeran": { id: "bendo", name: "Bendo" },
+  "maospati": { id: "karas", name: "Karas" }
+}
+
+export default function ChallengeCard({ challenge, culturalObject }) {
   const navigate = useNavigate()
   const { isChallengeCompleted, completeChallenge, recordAttempt } = useProgress()
   const [inputValue, setInputValue] = useState('')
@@ -63,11 +85,28 @@ export default function ChallengeCard({ challenge }) {
             <div className="challenge-success-actions" style={{ marginTop: '1.5rem', display: 'flex', gap: '0.75rem', flexDirection: 'column', width: '100%' }}>
               <button 
                 className="btn btn-primary btn-large" 
-                onClick={() => navigate('/missions')}
+                onClick={() => {
+                  if (culturalObject?.kecamatanId) {
+                    navigate(`/kecamatan/${culturalObject.kecamatanId}`)
+                  } else {
+                    navigate('/missions')
+                  }
+                }}
               >
-                <List size={18} />
-                Tantangan Lainnya
+                {culturalObject?.kecamatanName ? <MapPin size={18} /> : <List size={18} />}
+                {culturalObject?.kecamatanName ? `Jelajahi Kecamatan ${culturalObject.kecamatanName}` : 'Tantangan Lainnya'}
               </button>
+              
+              {culturalObject?.kecamatanId && NEAREST_KECAMATAN[culturalObject.kecamatanId] && (
+                <button 
+                  className="btn btn-secondary btn-large" 
+                  onClick={() => navigate(`/kecamatan/${NEAREST_KECAMATAN[culturalObject.kecamatanId].id}`)}
+                >
+                  <Compass size={18} />
+                  Lanjut ke Kec. {NEAREST_KECAMATAN[culturalObject.kecamatanId].name}
+                </button>
+              )}
+
               <button 
                 className="btn btn-secondary btn-large" 
                 onClick={() => navigate('/home')}

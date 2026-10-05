@@ -4,7 +4,8 @@ import {
   getSession,
   signOut,
   upsertStudent,
-  loadStudent
+  loadStudent,
+  recoverStudentProgress
 } from '../lib/supabase'
 
 /**
@@ -158,6 +159,14 @@ export function useStudentContext() {
       if (profileErr) {
         console.error('[MageMatika] Student profile upsert failed:', profileErr)
         setAuthError('Gagal menyimpan profil. Progress mungkin tidak tersinkronisasi.')
+      } else {
+        // Step 2.5: Recover progress from a previous session (if any)
+        // This transfers old progress to the new Anonymous UUID
+        await recoverStudentProgress({
+          name: trimmedName,
+          level: trimmedLevel,
+          grade: trimmedClass
+        }, user.id)
       }
 
       // Step 3: Update local state

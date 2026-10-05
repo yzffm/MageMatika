@@ -84,7 +84,7 @@ export default function ChallengePage() {
         </div>
 
         {/* The Challenge Itself */}
-        <ChallengeCard challenge={targetChallenge} />
+        <ChallengeCard challenge={targetChallenge} culturalObject={targetCulturalObject} />
       </main>
     </div>
   )

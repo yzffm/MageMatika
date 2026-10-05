@@ -95,6 +95,25 @@ export async function loadStudent(userId) {
   return { data, error }
 }
 
+/**
+ * Merge old progress to the new anonymous UUID if the student logs in again.
+ */
+export async function recoverStudentProgress(profile, newId) {
+  if (!supabase) return { error: new Error('Supabase not configured') }
+  
+  const { error } = await supabase.rpc('recover_student_progress', {
+    p_name: profile.name,
+    p_level: profile.level,
+    p_grade: profile.grade,
+    p_new_id: newId
+  })
+  
+  if (error) {
+    console.warn('[MageMatika] recoverStudentProgress error:', error)
+  }
+  return { error }
+}
+
 // ============================================================
 // CHALLENGE PROGRESS (challenge_progress table, auth-linked)
 // ============================================================
