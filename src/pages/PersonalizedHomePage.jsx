@@ -28,6 +28,7 @@ export default function PersonalizedHomePage() {
   if (isLoading) {
     return (
       <div className="home-page">
+        <div className="home-bg" aria-hidden="true" />
         <div className="home-texture" />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
           <div className="loading-spinner" />
@@ -43,6 +44,9 @@ export default function PersonalizedHomePage() {
 
   return (
     <div className="home-page">
+      {/* Latar ilustrasi Gunung Lawu (dekoratif) */}
+      <div className="home-bg" aria-hidden="true" />
+
       {/* Texture overlay for organic feel */}
       <div className="home-texture" />
 

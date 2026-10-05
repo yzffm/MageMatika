@@ -20,6 +20,37 @@
   mix-blend-mode: multiply;
 }
 
+/* Ilustrasi Gunung Lawu — latar tetap di bagian bawah layar */
+.home-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: var(--color-surface);
+  overflow: hidden;
+}
+
+.home-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/images/gunung-lawu-bg.jpg') center bottom / cover no-repeat;
+  /* Langit gambar memudar halus ke warna krem halaman (tanpa garis tepi) */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 38%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 38%);
+}
+
+/* Layar potret (ponsel): gambar diperbesar & dinaikkan sehingga gunung
+   berada di belakang area hero, bukan hanya di dasar layar */
+@media (max-aspect-ratio: 1/1) {
+  .home-bg::before {
+    background-size: auto 118%;
+    background-position: 56% bottom;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 22%);
+  }
+}
+
 /* === Top App Bar === */
 .home-topbar {
   position: sticky;
@@ -29,7 +60,9 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-2) 20px;
-  background: var(--color-surface);
+  background: rgba(254, 250, 224, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--color-outline-variant);
   box-shadow: var(--shadow-sm);
 }
@@ -241,7 +274,7 @@
   border-radius: 20px;
   cursor: pointer;
   transition: all 200ms ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(29, 28, 13, 0.08);
   position: relative;
   overflow: hidden;
 }
@@ -353,3 +386,21 @@
 }
 
 
+
+/* === Desktop === */
+@media (min-width: 900px) {
+  .home-main {
+    max-width: 560px;
+    padding-top: 40px;
+  }
+
+  .home-headline {
+    font-size: 34px;
+    line-height: 42px;
+    max-width: 440px;
+  }
+
+  .home-subheadline {
+    max-width: 420px;
+  }
+}
