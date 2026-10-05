@@ -1,114 +1,467 @@
-/* === MapPage Styles === */
+/* ===================================================================
+   MapPage — "Jelajahi Magetan" Interactive Exploration
+   
+   Visual direction:
+   - Map dominates viewport
+   - Minimal chrome
+   - Clean, educational, modern
+   - Mobile-first
+   =================================================================== */
 
+/* --- Page Layout --- */
 .map-page {
-  gap: var(--space-4);
-  padding-bottom: 80px; /* space for bottom nav */
-}
-
-.map-header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.map-title {
-  font-family: var(--font-display);
-  font-size: var(--text-2xl);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.map-subtitle {
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-}
-
-/* Legend */
-.map-legend {
-  display: flex;
-  gap: var(--space-5);
-  padding: var(--space-2) 0;
-}
-
-.map-legend-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-xs);
-  color: var(--color-text-secondary);
-}
-
-.map-legend-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-}
-
-.map-legend-dot--active {
-  background: #3b82f6;
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
-}
-
-.map-legend-dot--inactive {
-  background: #475569;
-}
-
-/* Map card — SVG container */
-.map-card {
   position: relative;
-  padding: var(--space-3);
+  max-width: 100%;
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
+}
+
+/* --- Top Bar --- */
+.map-topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
   align-items: center;
   gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  padding-top: calc(var(--space-3) + env(safe-area-inset-top, 0px));
+  background: linear-gradient(
+    to bottom,
+    var(--color-surface) 0%,
+    rgba(254, 250, 224, 0.92) 60%,
+    rgba(254, 250, 224, 0) 100%
+  );
+  pointer-events: none;
 }
 
-.map-svg {
+.map-topbar > * {
+  pointer-events: auto;
+}
+
+.map-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-outline-variant);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-on-surface);
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.map-back-btn:hover {
+  background: var(--color-surface-container-high);
+  box-shadow: var(--shadow-md);
+}
+
+.map-topbar-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.map-topbar-title h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-on-surface);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.map-topbar-title p {
+  font-size: var(--text-xs);
+  color: var(--color-on-surface-variant);
+  line-height: 1.3;
+  margin-top: 1px;
+}
+
+/* --- Map Viewport --- */
+.map-viewport {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+  background:
+    radial-gradient(
+      ellipse at center,
+      var(--color-surface-container-low) 0%,
+      var(--color-surface-dim) 100%
+    );
+}
+
+.map-viewport:active {
+  cursor: grabbing;
+}
+
+.map-viewport > .map-svg {
   display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-width: 450px;
-  height: auto;
+  height: 100%;
   overflow: visible;
 }
 
-/* Polygon interactivity */
-.map-poly {
-  cursor: pointer;
-  transition: fill 0.15s ease;
+/* Ikon lucide di dalam viewport tidak boleh ikut aturan svg peta */
+.map-viewport svg:not(.map-svg) {
+  position: static;
+  flex-shrink: 0;
 }
 
-/* Labels */
-.map-label {
-  fill: rgba(203, 213, 225, 0.55);
-  font-family: var(--font-body);
-  font-size: 7px;
+/* --- Map Controls (zoom +/−/reset) --- */
+.map-controls {
+  position: absolute;
+  top: 96px;
+  right: var(--space-4);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-outline-variant);
+  background: var(--color-outline-variant);
+}
+
+.map-control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
+  border: none;
+  font-size: 18px;
   font-weight: 500;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.map-control-btn:hover {
+  background: var(--color-surface-container-high);
+}
+
+.map-control-btn:active {
+  background: var(--color-surface-container-highest);
+}
+
+.map-control-btn + .map-control-btn {
+  border-top: 1px solid var(--color-outline-variant);
+}
+
+.map-control-btn--reset {
+  color: var(--color-primary);
+}
+
+/* --- Legend --- */
+.map-legend-float {
+  position: absolute;
+  top: 96px;
+  bottom: auto;
+  left: var(--space-4);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-outline-variant);
+  box-shadow: var(--shadow-sm);
+  font-size: 11px;
+  color: var(--color-on-surface-variant);
+}
+
+.map-legend-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.map-legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.map-legend-swatch--active {
+  background: var(--color-primary-container);
+}
+
+.map-legend-swatch--locked {
+  background: var(--color-surface-container-highest);
+}
+
+/* --- District Polygons --- */
+.map-district {
+  transition: fill var(--transition-fast), opacity var(--transition-fast);
+  cursor: pointer;
+  stroke: none;
+}
+
+.map-district--active {
+  fill: var(--color-map-active);
+}
+
+.map-district--active:hover,
+.map-district--active-hover {
+  fill: var(--color-map-active-hover);
+}
+
+.map-district--active.map-district--selected {
+  fill: var(--color-secondary);
+}
+
+.map-district--locked {
+  fill: var(--color-map-inactive);
+  opacity: 0.7;
+}
+
+.map-district--locked:hover,
+.map-district--locked-hover {
+  fill: var(--color-map-inactive-hover);
+  opacity: 0.85;
+}
+
+.map-district--locked.map-district--selected {
+  fill: var(--color-surface-container-highest);
+  opacity: 0.95;
+}
+
+/* Outline kecamatan (batas luar saja, tanpa batas antar-desa) */
+.map-outline {
+  stroke: rgba(255, 255, 255, 0.85);
+  stroke-width: 1px;
+  pointer-events: none;
+}
+
+.map-outline--selected {
+  stroke: #fff;
+  stroke-width: 2.5px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
+}
+
+/* --- District Labels --- */
+.map-label {
+  fill: rgba(0, 0, 0, 0.35);
+  font-family: var(--font-body);
+  font-weight: 500;
+  pointer-events: none;
+  user-select: none;
+  transition: fill var(--transition-fast);
 }
 
 .map-label--active {
-  fill: #ffffff;
-  font-size: 8.5px;
+  fill: rgba(255, 255, 255, 0.95);
   font-weight: 700;
   paint-order: stroke;
-  stroke: rgba(0, 0, 0, 0.6);
-  stroke-width: 2px;
+  stroke: rgba(0, 0, 0, 0.45);
+  stroke-width: 2.5px;
 }
 
-/* Info bar */
-.map-info-bar {
+.map-label--selected {
+  fill: #fff;
+  font-weight: 800;
+  stroke: rgba(0, 0, 0, 0.5);
+  stroke-width: 3px;
+}
+
+/* --- Selection Info Panel --- */
+.map-selection-panel {
+  position: absolute;
+  bottom: 88px;
+  left: var(--space-4);
+  right: var(--space-4);
+  z-index: 15;
+  background: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-4) var(--space-5);
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: var(--space-2) var(--space-4);
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
+  gap: var(--space-4);
+  animation: panelSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+@keyframes panelSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.map-selection-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-lg);
+  flex-shrink: 0;
+}
+
+.map-selection-icon--active {
+  background: var(--color-primary-fixed);
+  color: var(--color-primary);
+}
+
+.map-selection-icon--locked {
+  background: var(--color-surface-container-highest);
+  color: var(--color-outline);
+}
+
+.map-selection-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.map-selection-name {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-on-surface);
+  line-height: 1.25;
+}
+
+.map-selection-status {
+  font-size: var(--text-xs);
+  color: var(--color-on-surface-variant);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.map-selection-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.map-selection-status-dot--active {
+  background: var(--color-success);
+}
+
+.map-selection-status-dot--locked {
+  background: var(--color-outline);
+}
+
+.map-selection-action {
+  flex-shrink: 0;
+}
+
+.map-explore-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-family: var(--font-display);
   font-size: var(--text-sm);
-  color: var(--color-text-primary);
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  border: none;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
   white-space: nowrap;
 }
 
-/* Loading */
+.map-explore-btn:hover {
+  background: var(--color-primary-container);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.map-explore-btn:active {
+  transform: translateY(0);
+}
+
+.map-selection-close {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-outline);
+  transition: all var(--transition-fast);
+}
+
+.map-selection-close:hover {
+  background: var(--color-surface-container-high);
+  color: var(--color-on-surface);
+}
+
+/* --- Hint --- */
+.map-hint {
+  position: absolute;
+  bottom: 88px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  padding: var(--space-2) var(--space-4);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-outline-variant);
+  font-size: 12px;
+  color: var(--color-on-surface-variant);
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+  animation: hintFade 0.5s ease 1.5s both;
+  pointer-events: none;
+}
+
+@keyframes hintFade {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* When selection panel is visible, hide hint */
+.map-page:has(.map-selection-panel) .map-hint {
+  display: none;
+}
+
+/* --- Loading State --- */
 .map-loading {
   flex: 1;
   display: flex;
@@ -116,20 +469,65 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-4);
-  color: var(--color-text-secondary);
+  color: var(--color-on-surface-variant);
 }
 
 .map-loading-spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid rgba(59, 130, 246, 0.2);
-  border-top-color: #3b82f6;
+  border: 3px solid var(--color-primary-fixed);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+/* --- Responsive --- */
+@media (max-width: 480px) {
+  .map-topbar-title h1 {
+    font-size: var(--text-base);
+  }
+
+  .map-selection-panel {
+    left: var(--space-3);
+    right: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .map-selection-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .map-selection-name {
+    font-size: var(--text-sm);
+  }
+
+  .map-controls {
+    right: var(--space-3);
+  }
+
+  .map-legend-float {
+    left: var(--space-3);
+  }
+}
+
+@media (min-width: 768px) {
+  .map-selection-panel {
+    max-width: 420px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+
+  @keyframes panelSlideUp {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   }
 }

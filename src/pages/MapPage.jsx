@@ -5,8 +5,23 @@ import {
 } from 'd3-geo'
 
 import { useNavigate } from 'react-router-dom'
-import { useState, useMemo, useRef, useEffect } from 'react'
-import { ChevronLeft, MapPin, Lock } from 'lucide-react'
+import {
+  useState,
+  useMemo,
+  useRef,
+  useEffect,
+  useCallback,
+} from 'react'
+import {
+  ChevronLeft,
+  MapPin,
+  Lock,
+  Plus,
+  Minus,
+  Locate,
+  ArrowRight,
+  X,
+} from 'lucide-react'
 
 import { useCulturalObjects } from '../hooks/useContent.js'
 import { useToast } from '../hooks/useToast.jsx'
@@ -27,96 +42,6 @@ function normalizeKecamatanId(name) {
   return String(name || '')
     .trim()
     .toLowerCase()
-}
-
-function inspectGeoJSON(data) {
-  const points = []
-
-  function walkCoordinates(
-    coordinates,
-    feature,
-    path = []
-  ) {
-    if (!Array.isArray(coordinates)) {
-      return
-    }
-
-    // Coordinate pair: [longitude, latitude]
-    if (
-      coordinates.length >= 2 &&
-      typeof coordinates[0] === 'number' &&
-      typeof coordinates[1] === 'number'
-    ) {
-      points.push({
-        lng: coordinates[0],
-        lat: coordinates[1],
-        kecamatan:
-          feature.properties?.kecamatan,
-        kode:
-          feature.properties?.kode_kec,
-        path,
-      })
-
-      return
-    }
-
-    coordinates.forEach((child, index) => {
-      walkCoordinates(
-        child,
-        feature,
-        [...path, index]
-      )
-    })
-  }
-
-  for (const feature of data.features || []) {
-    walkCoordinates(
-      feature.geometry?.coordinates,
-      feature
-    )
-  }
-
-  const lngs = points.map(p => p.lng)
-  const lats = points.map(p => p.lat)
-
-  console.log(
-    '[GEO DEBUG] Total coordinates:',
-    points.length
-  )
-
-  console.log(
-    '[GEO DEBUG] Longitude range:',
-    Math.min(...lngs),
-    '→',
-    Math.max(...lngs)
-  )
-
-  console.log(
-    '[GEO DEBUG] Latitude range:',
-    Math.min(...lats),
-    '→',
-    Math.max(...lats)
-  )
-
-  // Coordinates yang mencurigakan untuk Magetan
-  const suspicious = points.filter(
-    p =>
-      p.lng < 110 ||
-      p.lng > 112 ||
-      p.lat > -6 ||
-      p.lat < -9
-  )
-
-  console.log(
-    '[GEO DEBUG] Suspicious coordinates:',
-    suspicious.length
-  )
-
-  console.table(
-    suspicious.slice(0, 100)
-  )
-
-  return points
 }
 
 
@@ -165,36 +90,70 @@ function buildKecamatanFeatures(data) {
         name: kecamatan,
         kode: feature.properties?.kode_kec || null,
         polygons: [],
+        edges: new Map(),
       })
     }
 
     const group = groups.get(id)
     const geometry = feature.geometry
 
-    if (geometry.type === 'Polygon') {
-      group.polygons.push(fixRingWinding(geometry.coordinates))
-    }
+    const polygons =
+      geometry.type === 'Polygon'
+        ? [geometry.coordinates]
+        : geometry.type === 'MultiPolygon'
+          ? geometry.coordinates
+          : []
 
-    if (geometry.type === 'MultiPolygon') {
-      for (const polygon of geometry.coordinates) {
-        group.polygons.push(fixRingWinding(polygon))
+    for (const polygon of polygons) {
+      group.polygons.push(fixRingWinding(polygon))
+
+      // Hitung sisi (edge) tiap ring. Sisi yang dipakai 2 desa
+      // (batas internal) akan muncul >1x dan dibuang dari outline.
+      for (const ring of polygon) {
+        for (let i = 0; i < ring.length - 1; i++) {
+          const a = ring[i]
+          const b = ring[i + 1]
+          const ka = a.join(',')
+          const kb = b.join(',')
+          const key = ka < kb ? `${ka}|${kb}` : `${kb}|${ka}`
+          const entry = group.edges.get(key)
+          if (entry) entry.count += 1
+          else group.edges.set(key, { a, b, count: 1 })
+        }
       }
     }
   }
 
-  return Array.from(groups.values()).map((group) => ({
-    type: 'Feature',
-    properties: {
-      kecamatan: group.name,
-      kecamatanId: group.id,
-      kode_kec: group.kode,
-    },
-    geometry: {
-      type: 'MultiPolygon',
-      coordinates: group.polygons,
-    },
-  }))
+  return Array.from(groups.values()).map((group) => {
+    const outline = []
+    for (const edge of group.edges.values()) {
+      if (edge.count === 1) outline.push([edge.a, edge.b])
+    }
+
+    return {
+      type: 'Feature',
+      properties: {
+        kecamatan: group.name,
+        kecamatanId: group.id,
+        kode_kec: group.kode,
+        // Batas luar kecamatan saja (tanpa batas antar-desa)
+        outline: { type: 'MultiLineString', coordinates: outline },
+      },
+      geometry: {
+        type: 'MultiPolygon',
+        coordinates: group.polygons,
+      },
+    }
+  })
 }
+
+
+/* ===================================================================
+   Zoom / Pan constants
+   =================================================================== */
+const MIN_ZOOM = 0.8
+const MAX_ZOOM = 5
+const ZOOM_STEP = 0.3
 
 
 export default function MapPage() {
@@ -202,195 +161,141 @@ export default function MapPage() {
   const navigate = useNavigate()
   const { showToast } = useToast()
 
-  const svgRef = useRef(null)
-  const containerRef = useRef(null)
+  const viewportRef = useRef(null)
 
-  const [dimensions, setDimensions] = useState({
-    width: 380,
-    height: 480,
-  })
-
+  /* ---------------------------------------------------------------
+     Selection state
+     --------------------------------------------------------------- */
+  const [selectedKec, setSelectedKec] = useState(null)
   const [hoveredKec, setHoveredKec] = useState(null)
 
-  const [tooltipPos, setTooltipPos] = useState({
+  /* ---------------------------------------------------------------
+     Pan / Zoom state
+     --------------------------------------------------------------- */
+  const [transform, setTransform] = useState({
     x: 0,
     y: 0,
+    scale: 1,
   })
 
-  //debug
+  // Track dragging
+  const dragState = useRef({
+    dragging: false,
+    startX: 0,
+    startY: 0,
+    startTx: 0,
+    startTy: 0,
+    moved: false,
+  })
+
+  // Track pinch
+  const pinchState = useRef({
+    active: false,
+    initialDistance: 0,
+    initialScale: 1,
+    initialMidX: 0,
+    initialMidY: 0,
+    initialTx: 0,
+    initialTy: 0,
+  })
+
+  /* ---------------------------------------------------------------
+     Viewport dimensions
+     --------------------------------------------------------------- */
+  const [viewportSize, setViewportSize] = useState({
+    width: 400,
+    height: 600,
+  })
+
   useEffect(() => {
-    inspectGeoJSON(geojsonData)
-  }, [])
-
-
-  /**
-   * ---------------------------------------------------------
-   * 1. Responsive dimensions
-   * ---------------------------------------------------------
-   */
-  useEffect(() => {
-    const updateDimensions = () => {
-      if (!containerRef.current) {
-        return
-      }
-
-      const containerWidth = containerRef.current.clientWidth
-
-      // Padding kiri + kanan dari map-container
-      const availableWidth = Math.max(
-        280,
-        Math.min(containerWidth - 32, 450)
-      )
-
-      // Magetan dibuat portrait-ish.
-      // Ratio ini masih bisa kamu tuning.
-      const width = availableWidth
-      const height = width * 1.15
-
-      setDimensions({
-        width,
-        height,
+    const updateSize = () => {
+      if (!viewportRef.current) return
+      setViewportSize({
+        width: viewportRef.current.clientWidth,
+        height: viewportRef.current.clientHeight,
       })
     }
 
-    updateDimensions()
+    updateSize()
 
-    const observer = new ResizeObserver(updateDimensions)
-
-    if (containerRef.current) {
-      observer.observe(containerRef.current)
+    const observer = new ResizeObserver(updateSize)
+    if (viewportRef.current) {
+      observer.observe(viewportRef.current)
     }
 
-    window.addEventListener('resize', updateDimensions)
-
-    return () => {
-      observer.disconnect()
-      window.removeEventListener('resize', updateDimensions)
-    }
+    return () => observer.disconnect()
   }, [])
 
 
-  /**
-   * ---------------------------------------------------------
-   * 2. Active kecamatan
-   * ---------------------------------------------------------
-   */
+  /* ---------------------------------------------------------------
+     Active kecamatan (ones that have cultural objects)
+     --------------------------------------------------------------- */
   const activeKecamatanIds = useMemo(() => {
     return new Set(
       culturalObjects
-        .map((location) =>
-          normalizeKecamatanId(location.kecamatanId)
+        .map((obj) =>
+          normalizeKecamatanId(obj.kecamatanId)
         )
         .filter(Boolean)
     )
   }, [culturalObjects])
 
+  /* Count cultural objects per kecamatan */
+  const objectCountByKec = useMemo(() => {
+    const counts = {}
+    for (const obj of culturalObjects) {
+      const id = normalizeKecamatanId(obj.kecamatanId)
+      if (id) {
+        counts[id] = (counts[id] || 0) + 1
+      }
+    }
+    return counts
+  }, [culturalObjects])
 
-  /**
-   * ---------------------------------------------------------
-   * 3. Convert 235 desa -> 18 kecamatan
-   * ---------------------------------------------------------
-   */
+
+  /* ---------------------------------------------------------------
+     Convert 235 desa -> 18 kecamatan
+     --------------------------------------------------------------- */
   const kecamatanFeatures = useMemo(() => {
-    console.log(
-      '[MAP DEBUG] Total source features:',
-      geojsonData?.features?.length
-    )
+    return buildKecamatanFeatures(geojsonData)
+  }, [])
 
-    const result = buildKecamatanFeatures(geojsonData)
 
-    console.log(
-      '[MAP DEBUG] Total kecamatan:',
-      result.length
-    )
-
-    console.log(
-      '[MAP DEBUG] Kecamatan:',
-      result.map(
-        feature => feature.properties.kecamatan
-      )
-    )
-
-    return result
-  }, [geojsonData])
-
-  /**
-   * ---------------------------------------------------------
-   * 4. Build projection
-   *
-   * IMPORTANT:
-   * projection sekarang FIT ke 18 kecamatan,
-   * bukan ke 235 polygon desa.
-   * ---------------------------------------------------------
-   */
+  /* ---------------------------------------------------------------
+     Build projection — fits all kecamatan into viewport
+     --------------------------------------------------------------- */
   const { projection, pathGenerator } = useMemo(() => {
-    const padding = 24
+    const padding = 32
+    const width = viewportSize.width
+    const height = viewportSize.height
 
-    const width = dimensions.width
-    const height = dimensions.height
-
-    /**
-     * ---------------------------------------------------------
-     * Hitung bounding box GeoJSON secara manual.
-     *
-     * Kita sengaja TIDAK menggunakan fitExtent().
-     * ---------------------------------------------------------
-     */
-
+    // Manual bounding box
     let minLng = Infinity
     let maxLng = -Infinity
     let minLat = Infinity
     let maxLat = -Infinity
 
     function walkCoordinates(coordinates) {
-      if (!Array.isArray(coordinates)) {
-        return
-      }
-
-      // [longitude, latitude]
+      if (!Array.isArray(coordinates)) return
       if (
         coordinates.length >= 2 &&
         typeof coordinates[0] === 'number' &&
         typeof coordinates[1] === 'number'
       ) {
-        const lng = coordinates[0]
-        const lat = coordinates[1]
-
-        minLng = Math.min(minLng, lng)
-        maxLng = Math.max(maxLng, lng)
-
-        minLat = Math.min(minLat, lat)
-        maxLat = Math.max(maxLat, lat)
-
+        minLng = Math.min(minLng, coordinates[0])
+        maxLng = Math.max(maxLng, coordinates[0])
+        minLat = Math.min(minLat, coordinates[1])
+        maxLat = Math.max(maxLat, coordinates[1])
         return
       }
-
       for (const child of coordinates) {
         walkCoordinates(child)
       }
     }
 
     for (const feature of kecamatanFeatures) {
-      walkCoordinates(
-        feature.geometry?.coordinates
-      )
+      walkCoordinates(feature.geometry?.coordinates)
     }
-
-    console.log(
-      '[MAP DEBUG] Manual bounds:',
-      {
-        minLng,
-        maxLng,
-        minLat,
-        maxLat,
-      }
-    )
-
-    /**
-     * ---------------------------------------------------------
-     * Guard
-     * ---------------------------------------------------------
-     */
 
     if (
       !Number.isFinite(minLng) ||
@@ -398,227 +303,57 @@ export default function MapPage() {
       !Number.isFinite(minLat) ||
       !Number.isFinite(maxLat)
     ) {
-      console.error(
-        '[MAP ERROR] Invalid GeoJSON bounds'
-      )
-
       return {
         projection: geoMercator(),
         pathGenerator: geoPath(),
       }
     }
 
-    /**
-     * ---------------------------------------------------------
-     * Center geografis
-     * ---------------------------------------------------------
-     */
-
-    const centerLng =
-      (minLng + maxLng) / 2
-
-    const centerLat =
-      (minLat + maxLat) / 2
-
-
-    /**
-     * ---------------------------------------------------------
-     * Base projection
-     * ---------------------------------------------------------
-     */
+    const centerLng = (minLng + maxLng) / 2
+    const centerLat = (minLat + maxLat) / 2
 
     const projection = geoMercator()
-      .center([
-        centerLng,
-        centerLat,
-      ])
-      .translate([
-        width / 2,
-        height / 2,
-      ])
+      .center([centerLng, centerLat])
+      .translate([width / 2, height / 2])
 
-
-    /**
-     * ---------------------------------------------------------
-     * Hitung scale berdasarkan hasil projection.
-     *
-     * Kita project 4 corner bounding box kemudian cari
-     * ukuran geografis dalam pixel pada scale=1.
-     * ---------------------------------------------------------
-     */
-
+    // Compute scale
     projection.scale(1)
 
-    console.log(
-      '[MAP DEBUG] Scale=1 projected corners:',
-      {
-        topLeft: projection([
-          minLng,
-          maxLat,
-        ]),
+    const projTL = projection([minLng, maxLat])
+    const projTR = projection([maxLng, maxLat])
+    const projBL = projection([minLng, minLat])
 
-        topRight: projection([
-          maxLng,
-          maxLat,
-        ]),
+    const projectedWidth = Math.abs(projTR[0] - projTL[0])
+    const projectedHeight = Math.abs(projBL[1] - projTL[1])
 
-        bottomLeft: projection([
-          minLng,
-          minLat,
-        ]),
+    const availW = width - padding * 2
+    const availH = height - padding * 2
 
-        bottomRight: projection([
-          maxLng,
-          minLat,
-        ]),
-      }
+    const scale = Math.min(
+      availW / projectedWidth,
+      availH / projectedHeight
     )
-
-    const projectedTopLeft =
-      projection([
-        minLng,
-        maxLat,
-      ])
-
-    const projectedTopRight =
-      projection([
-        maxLng,
-        maxLat,
-      ])
-
-    const projectedBottomLeft =
-      projection([
-        minLng,
-        minLat,
-      ])
-
-    const projectedBottomRight =
-      projection([
-        maxLng,
-        minLat,
-      ])
-
-
-    const projectedWidth = Math.abs(
-      projectedTopRight[0] -
-      projectedTopLeft[0]
-    )
-
-    const projectedHeight = Math.abs(
-      projectedBottomLeft[1] -
-      projectedTopLeft[1]
-    )
-
-
-    /**
-     * ---------------------------------------------------------
-     * Scale supaya geometry masuk ke SVG.
-     * ---------------------------------------------------------
-     */
-
-    const availableWidth =
-      width - padding * 2
-
-    const availableHeight =
-      height - padding * 2
-
-    const scaleX =
-      availableWidth / projectedWidth
-
-    const scaleY =
-      availableHeight / projectedHeight
-
-    const scale =
-      Math.min(scaleX, scaleY)
-
-
-    /**
-     * ---------------------------------------------------------
-     * Apply scale
-     * ---------------------------------------------------------
-     */
 
     projection.scale(scale)
+    projection.translate([width / 2, height / 2])
+
+    const pathGenerator = geoPath().projection(projection)
+
+    return { projection, pathGenerator }
+  }, [viewportSize.width, viewportSize.height, kecamatanFeatures])
 
 
-    /**
-     * Setelah scale berubah, translate perlu disesuaikan
-     * supaya center geometry tetap berada di tengah SVG.
-     */
-
-    projection.translate([
-      width / 2,
-      height / 2,
-    ])
-
-
-    const pathGenerator =
-      geoPath().projection(projection)
-
-
-    /**
-     * ---------------------------------------------------------
-     * Debug
-     * ---------------------------------------------------------
-     */
-
-    console.log(
-      '[MAP DEBUG] Final projection:',
-      {
-        center: projection.center(),
-        scale: projection.scale(),
-        translate: projection.translate(),
-      }
-    )
-
-
-    const sampleFeature =
-      kecamatanFeatures[0]
-
-    if (sampleFeature) {
-      console.log(
-        '[MAP DEBUG] Sample path length:',
-        pathGenerator(sampleFeature)?.length
-      )
-    }
-
-
-    return {
-      projection,
-      pathGenerator,
-    }
-
-  }, [
-    dimensions.width,
-    dimensions.height,
-    kecamatanFeatures,
-  ])
-
-
-  /**
-   * ---------------------------------------------------------
-   * 5. Centroid setiap kecamatan
-   *
-   * Jangan lagi menghitung rata-rata vertex secara manual.
-   *
-   * geoCentroid() menghitung centroid berdasarkan geometry.
-   * ---------------------------------------------------------
-   */
+  /* ---------------------------------------------------------------
+     Centroids for labels
+     --------------------------------------------------------------- */
   const kecamatanCentroids = useMemo(() => {
     const result = {}
 
     for (const feature of kecamatanFeatures) {
       const centroid = geoCentroid(feature)
-
-      if (!centroid || !Number.isFinite(centroid[0])) {
-        continue
-      }
-
+      if (!centroid || !Number.isFinite(centroid[0])) continue
       const projected = projection(centroid)
-
-      if (!projected) {
-        continue
-      }
+      if (!projected) continue
 
       result[feature.properties.kecamatanId] = {
         x: projected[0],
@@ -628,60 +363,247 @@ export default function MapPage() {
     }
 
     return result
-  }, [
-    kecamatanFeatures,
-    projection,
-  ])
+  }, [kecamatanFeatures, projection])
 
 
-  /**
-   * ---------------------------------------------------------
-   * 6. Click kecamatan
-   * ---------------------------------------------------------
-   */
-  function handleClick(feature) {
-    const kecamatanId =
-      feature.properties.kecamatanId
+  /* ---------------------------------------------------------------
+     Zoom helpers
+     --------------------------------------------------------------- */
+  const clampTransform = useCallback((tx, ty, s) => {
+    const clampedScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, s))
+    // Allow some pan room beyond edges
+    const maxPan = 200 * clampedScale
+    return {
+      x: Math.max(-maxPan, Math.min(maxPan, tx)),
+      y: Math.max(-maxPan, Math.min(maxPan, ty)),
+      scale: clampedScale,
+    }
+  }, [])
 
-    if (activeKecamatanIds.has(kecamatanId)) {
-      navigate(`/kecamatan/${kecamatanId}`)
-      return
+  const zoomIn = useCallback(() => {
+    setTransform((prev) =>
+      clampTransform(prev.x, prev.y, prev.scale + ZOOM_STEP)
+    )
+  }, [clampTransform])
+
+  const zoomOut = useCallback(() => {
+    setTransform((prev) =>
+      clampTransform(prev.x, prev.y, prev.scale - ZOOM_STEP)
+    )
+  }, [clampTransform])
+
+  const resetView = useCallback(() => {
+    setTransform({ x: 0, y: 0, scale: 1 })
+    setSelectedKec(null)
+  }, [])
+
+
+  /* ---------------------------------------------------------------
+     Mouse wheel zoom
+     --------------------------------------------------------------- */
+  useEffect(() => {
+    const el = viewportRef.current
+    if (!el) return
+
+    const handleWheel = (e) => {
+      e.preventDefault()
+      const delta = e.deltaY > 0 ? -ZOOM_STEP * 0.5 : ZOOM_STEP * 0.5
+      setTransform((prev) =>
+        clampTransform(prev.x, prev.y, prev.scale + delta)
+      )
     }
 
-    showToast('🔒 Kecamatan ini segera hadir!')
-  }
+    el.addEventListener('wheel', handleWheel, { passive: false })
+    return () => el.removeEventListener('wheel', handleWheel)
+  }, [clampTransform])
 
 
-  /**
-   * ---------------------------------------------------------
-   * 7. Tooltip
-   * ---------------------------------------------------------
-   */
-  function handleMouseMove(event, feature) {
-    const kecamatanId =
-      feature.properties.kecamatanId
+  /* ---------------------------------------------------------------
+     Pointer drag — uses document-level listeners so SVG child
+     click events still fire (setPointerCapture would steal them).
+     --------------------------------------------------------------- */
+  const handlePointerDown = useCallback(
+    (e) => {
+      // Only single-finger / left-click
+      if (e.pointerType === 'touch' && e.isPrimary === false) return
+      if (e.button !== 0) return
 
-    setHoveredKec(kecamatanId)
+      dragState.current = {
+        dragging: true,
+        startX: e.clientX,
+        startY: e.clientY,
+        startTx: transform.x,
+        startTy: transform.y,
+        moved: false,
+      }
 
-    if (!svgRef.current) {
-      return
+      const onMove = (me) => {
+        if (!dragState.current.dragging) return
+        if (pinchState.current.active) return
+
+        const dx = me.clientX - dragState.current.startX
+        const dy = me.clientY - dragState.current.startY
+
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+          dragState.current.moved = true
+        }
+
+        setTransform((prev) =>
+          clampTransform(
+            dragState.current.startTx + dx,
+            dragState.current.startTy + dy,
+            prev.scale
+          )
+        )
+      }
+
+      const onUp = () => {
+        dragState.current.dragging = false
+        document.removeEventListener('pointermove', onMove)
+        document.removeEventListener('pointerup', onUp)
+      }
+
+      document.addEventListener('pointermove', onMove)
+      document.addEventListener('pointerup', onUp)
+    },
+    [transform.x, transform.y, clampTransform]
+  )
+
+
+  /* ---------------------------------------------------------------
+     Touch pinch-to-zoom
+     --------------------------------------------------------------- */
+  const activeTouches = useRef(new Map())
+
+  const handleTouchStart = useCallback(
+    (e) => {
+      for (const touch of e.changedTouches) {
+        activeTouches.current.set(touch.identifier, {
+          x: touch.clientX,
+          y: touch.clientY,
+        })
+      }
+
+      if (activeTouches.current.size === 2) {
+        const entries = [...activeTouches.current.values()]
+        const dx = entries[1].x - entries[0].x
+        const dy = entries[1].y - entries[0].y
+        const dist = Math.hypot(dx, dy)
+
+        pinchState.current = {
+          active: true,
+          initialDistance: dist,
+          initialScale: transform.scale,
+          initialMidX: (entries[0].x + entries[1].x) / 2,
+          initialMidY: (entries[0].y + entries[1].y) / 2,
+          initialTx: transform.x,
+          initialTy: transform.y,
+        }
+      }
+    },
+    [transform.scale, transform.x, transform.y]
+  )
+
+  const handleTouchMove = useCallback(
+    (e) => {
+      for (const touch of e.changedTouches) {
+        activeTouches.current.set(touch.identifier, {
+          x: touch.clientX,
+          y: touch.clientY,
+        })
+      }
+
+      if (pinchState.current.active && activeTouches.current.size >= 2) {
+        const entries = [...activeTouches.current.values()]
+        const dx = entries[1].x - entries[0].x
+        const dy = entries[1].y - entries[0].y
+        const dist = Math.hypot(dx, dy)
+
+        const ratio = dist / pinchState.current.initialDistance
+        const newScale = pinchState.current.initialScale * ratio
+
+        setTransform(
+          clampTransform(
+            pinchState.current.initialTx,
+            pinchState.current.initialTy,
+            newScale
+          )
+        )
+      }
+    },
+    [clampTransform]
+  )
+
+  const handleTouchEnd = useCallback((e) => {
+    for (const touch of e.changedTouches) {
+      activeTouches.current.delete(touch.identifier)
     }
 
-    const rect =
-      svgRef.current.getBoundingClientRect()
-
-    setTooltipPos({
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top - 42,
-    })
-  }
+    if (activeTouches.current.size < 2) {
+      pinchState.current.active = false
+    }
+  }, [])
 
 
-  /**
-   * ---------------------------------------------------------
-   * Loading state
-   * ---------------------------------------------------------
-   */
+  /* ---------------------------------------------------------------
+     District click
+     --------------------------------------------------------------- */
+  const handleDistrictClick = useCallback(
+    (feature) => {
+      // Ignore if the user dragged
+      if (dragState.current.moved) return
+
+      const kecamatanId = feature.properties.kecamatanId
+
+      if (selectedKec === kecamatanId) {
+        // Second tap on already selected => navigate if active
+        if (activeKecamatanIds.has(kecamatanId)) {
+          navigate(`/kecamatan/${kecamatanId}`)
+        } else {
+          showToast('🔒 Kecamatan ini segera hadir!')
+        }
+        return
+      }
+
+      setSelectedKec(kecamatanId)
+    },
+    [selectedKec, activeKecamatanIds, navigate, showToast]
+  )
+
+
+  /* ---------------------------------------------------------------
+     Selection panel helpers
+     --------------------------------------------------------------- */
+  const selectedFeature = useMemo(() => {
+    if (!selectedKec) return null
+    return kecamatanFeatures.find(
+      (f) => f.properties.kecamatanId === selectedKec
+    )
+  }, [selectedKec, kecamatanFeatures])
+
+  const isSelectedActive = selectedKec
+    ? activeKecamatanIds.has(selectedKec)
+    : false
+
+  const selectedObjectCount = selectedKec
+    ? objectCountByKec[selectedKec] || 0
+    : 0
+
+
+  // Gambar kecamatan terpilih/hover paling akhir supaya outline-nya tidak tertimpa tetangga
+  const orderedFeatures = useMemo(() => {
+    const top = (f) =>
+      f.properties.kecamatanId === selectedKec
+        ? 2
+        : f.properties.kecamatanId === hoveredKec
+          ? 1
+          : 0
+    return [...kecamatanFeatures].sort((a, b) => top(a) - top(b))
+  }, [kecamatanFeatures, selectedKec, hoveredKec])
+
+  /* ---------------------------------------------------------------
+     Loading
+     --------------------------------------------------------------- */
   if (loading) {
     return (
       <div className="page-container map-page">
@@ -693,270 +615,285 @@ export default function MapPage() {
     )
   }
 
+  /* ---------------------------------------------------------------
+     Font size for labels based on zoom
+     --------------------------------------------------------------- */
+  const baseLabelSize = viewportSize.width < 400 ? 7 : 8.5
+  const labelSize = baseLabelSize / transform.scale
 
+
+  /* ---------------------------------------------------------------
+     Render
+     --------------------------------------------------------------- */
   return (
-    <div
-      className="page-container map-page"
-      ref={containerRef}
-    >
+    <div className="page-container map-page">
 
-      {/* =====================================================
-          HEADER
-      ====================================================== */}
-      <header className="map-header animate-fade-in-up">
-
+      {/* =========================================================
+          TOP BAR
+      ========================================================== */}
+      <div className="map-topbar">
         <button
-          className="btn btn-ghost"
-          onClick={() => navigate('/')}
+          className="map-back-btn"
+          onClick={() => navigate('/home')}
+          aria-label="Kembali"
         >
-          <ChevronLeft size={18} />
-          Kembali
+          <ChevronLeft size={20} />
         </button>
 
-        <div>
-          <h1 className="map-title">
-            Peta Magetan
-          </h1>
-
-          <p className="map-subtitle">
-            Pilih kecamatan untuk memulai eksplorasi
-          </p>
+        <div className="map-topbar-title">
+          <h1>Jelajahi Magetan</h1>
+          <p>Ketuk kecamatan untuk mulai eksplorasi</p>
         </div>
-
-      </header>
-
-
-      {/* =====================================================
-          LEGEND
-      ====================================================== */}
-      <div
-        className="map-legend animate-fade-in-up"
-        style={{
-          animationDelay: '0.1s',
-        }}
-      >
-
-        <div className="map-legend-item">
-          <span className="map-legend-dot map-legend-dot--active" />
-
-          <span>
-            Aktif ({activeKecamatanIds.size})
-          </span>
-        </div>
-
-
-        <div className="map-legend-item">
-          <span className="map-legend-dot map-legend-dot--inactive" />
-
-          <span>
-            Segera Hadir ({Math.max(
-              0,
-              kecamatanFeatures.length -
-              activeKecamatanIds.size
-            )})
-          </span>
-        </div>
-
       </div>
 
 
-      {/* =====================================================
-          MAP
-      ====================================================== */}
+      {/* =========================================================
+          MAP VIEWPORT
+      ========================================================== */}
       <div
-        className="map-container glass-card animate-fade-in-up"
-        style={{
-          animationDelay: '0.2s',
-        }}
+        className="map-viewport"
+        ref={viewportRef}
+        onPointerDown={handlePointerDown}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
       >
-
         <svg
-          ref={svgRef}
-          width={dimensions.width}
-          height={dimensions.height}
-          viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
           className="map-svg"
+          width={viewportSize.width}
+          height={viewportSize.height}
+          viewBox={`0 0 ${viewportSize.width} ${viewportSize.height}`}
           role="img"
           aria-label="Peta Kecamatan Magetan"
+          style={{ touchAction: 'none' }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !dragState.current.moved) {
+              setSelectedKec(null)
+            }
+          }}
         >
+          <g
+            transform={`translate(${transform.x}, ${transform.y}) scale(${transform.scale})`}
+            style={{
+              transformOrigin: `${viewportSize.width / 2}px ${viewportSize.height / 2}px`,
+            }}
+          >
+            {/* ===================================================
+                RENDER 18 KECAMATAN
+            ==================================================== */}
+            {orderedFeatures.map((feature) => {
+              const kecamatanId = feature.properties.kecamatanId
+              const isActive = activeKecamatanIds.has(kecamatanId)
+              const isHovered = hoveredKec === kecamatanId
+              const isSelected = selectedKec === kecamatanId
 
-          {/* =================================================
-              SVG FILTER
-          ================================================== */}
-          <defs>
-
-            <filter
-              id="map-glow"
-              x="-50%"
-              y="-50%"
-              width="200%"
-              height="200%"
-            >
-              <feGaussianBlur
-                stdDeviation="2"
-                result="blur"
-              />
-
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-
-            </filter>
-
-          </defs>
-
-
-          {/* =================================================
-              RENDER 18 KECAMATAN
-          ================================================== */}
-          {kecamatanFeatures.map((feature) => {
-
-            const kecamatanId =
-              feature.properties.kecamatanId
-
-            const isActive =
-              activeKecamatanIds.has(kecamatanId)
-
-            const isHovered =
-              hoveredKec === kecamatanId
-
-
-            return (
-              <path
-                key={kecamatanId}
-                d={pathGenerator(feature) || ''}
-                fill={
-                  isActive
-                    ? (
-                      isHovered
-                        ? 'var(--color-map-active-hover)'
-                        : 'var(--color-map-active)'
-                    )
-                    : (
-                      isHovered
-                        ? 'var(--color-map-inactive-hover)'
-                        : 'var(--color-map-inactive)'
-                    )
-                }
-                stroke="var(--color-map-stroke)"
-                strokeWidth={
-                  isHovered ? 1.2 : 0.7
-                }
-                strokeLinejoin="round"
-                strokeLinecap="round"
-                vectorEffect="non-scaling-stroke"
-                onClick={() => handleClick(feature)}
-                onMouseEnter={(event) =>
-                  handleMouseMove(event, feature)
-                }
-                onMouseMove={(event) =>
-                  handleMouseMove(event, feature)
-                }
-                onMouseLeave={() =>
-                  setHoveredKec(null)
-                }
-                onTouchStart={() =>
-                  setHoveredKec(kecamatanId)
-                }
-                className={[
-                  'map-polygon',
-                  isActive
-                    ? 'map-polygon--active'
-                    : 'map-polygon--inactive',
-                ].join(' ')}
-                filter={
-                  isActive
-                    ? 'url(#map-glow)'
-                    : undefined
-                }
-              />
-            )
-          })}
-
-
-          {/* =================================================
-              KECAMATAN LABELS
-          ================================================== */}
-          {Object.entries(kecamatanCentroids).map(
-            ([kecamatanId, position]) => {
-
-              const isActive =
-                activeKecamatanIds.has(kecamatanId)
+              const classNames = [
+                'map-district',
+                isActive
+                  ? 'map-district--active'
+                  : 'map-district--locked',
+                isSelected ? 'map-district--selected' : '',
+                isHovered && !isSelected
+                  ? (isActive
+                    ? 'map-district--active-hover'
+                    : 'map-district--locked-hover')
+                  : '',
+              ]
+                .filter(Boolean)
+                .join(' ')
 
               return (
-                <text
-                  key={kecamatanId}
-                  x={position.x}
-                  y={position.y}
-                  className={[
-                    'map-label',
-                    isActive
-                      ? 'map-label--active'
-                      : '',
-                  ].join(' ')}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fontSize={
-                    dimensions.width < 350
-                      ? 7
-                      : 8
-                  }
-                  pointerEvents="none"
-                >
-                  {position.name}
-                </text>
+                <g key={kecamatanId}>
+                  <path
+                    d={pathGenerator(feature) || ''}
+                    className={classNames}
+                    onClick={() => handleDistrictClick(feature)}
+                    onMouseEnter={() => setHoveredKec(kecamatanId)}
+                    onMouseLeave={() => setHoveredKec(null)}
+                  />
+                  <path
+                    d={pathGenerator(feature.properties.outline) || ''}
+                    className={
+                      'map-outline' +
+                      (isSelected ? ' map-outline--selected' : '')
+                    }
+                    fill="none"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </g>
               )
-            }
-          )}
+            })}
 
+
+            {/* ===================================================
+                KECAMATAN LABELS
+            ==================================================== */}
+            {Object.entries(kecamatanCentroids).map(
+              ([kecamatanId, position]) => {
+                const isActive = activeKecamatanIds.has(kecamatanId)
+                const isSelected = selectedKec === kecamatanId
+
+                return (
+                  <text
+                    key={kecamatanId}
+                    x={position.x}
+                    y={position.y}
+                    className={[
+                      'map-label',
+                      isActive ? 'map-label--active' : '',
+                      isSelected ? 'map-label--selected' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize={
+                      isSelected
+                        ? labelSize * 1.15
+                        : labelSize
+                    }
+                  >
+                    {position.name}
+                  </text>
+                )
+              }
+            )}
+          </g>
         </svg>
 
 
-        {/* ===================================================
-            TOOLTIP
-        ==================================================== */}
-        {hoveredKec && (
-          <div
-            className="map-tooltip"
-            style={{
-              left: tooltipPos.x,
-              top: tooltipPos.y,
-            }}
+        {/* =========================================================
+            MAP CONTROLS
+        ========================================================== */}
+        <div className="map-controls">
+          <button
+            className="map-control-btn"
+            onClick={zoomIn}
+            aria-label="Perbesar"
           >
+            <Plus size={18} />
+          </button>
 
-            {activeKecamatanIds.has(
-              hoveredKec
-            ) ? (
-              <>
-                <MapPin size={12} />
-                {
-                  kecamatanFeatures.find(
-                    (feature) =>
-                      feature.properties.kecamatanId ===
-                      hoveredKec
-                  )?.properties.kecamatan
-                }
-                {' '}— Klik untuk jelajah
-              </>
-            ) : (
-              <>
-                <Lock size={12} />
-                {
-                  kecamatanFeatures.find(
-                    (feature) =>
-                      feature.properties.kecamatanId ===
-                      hoveredKec
-                  )?.properties.kecamatan
-                }
-                {' '}— Segera hadir
-              </>
-            )}
+          <button
+            className="map-control-btn"
+            onClick={zoomOut}
+            aria-label="Perkecil"
+          >
+            <Minus size={18} />
+          </button>
 
+          <button
+            className="map-control-btn map-control-btn--reset"
+            onClick={resetView}
+            aria-label="Reset peta"
+          >
+            <Locate size={18} />
+          </button>
+        </div>
+
+
+        {/* =========================================================
+            LEGEND
+        ========================================================== */}
+        <div className="map-legend-float">
+          <div className="map-legend-row">
+            <span className="map-legend-swatch map-legend-swatch--active" />
+            <span>Aktif ({activeKecamatanIds.size})</span>
+          </div>
+          <div className="map-legend-row">
+            <span className="map-legend-swatch map-legend-swatch--locked" />
+            <span>
+              Segera Hadir (
+              {Math.max(
+                0,
+                kecamatanFeatures.length - activeKecamatanIds.size
+              )}
+              )
+            </span>
+          </div>
+        </div>
+
+
+        {/* =========================================================
+            HINT (shown when no selection)
+        ========================================================== */}
+        {!selectedKec && (
+          <div className="map-hint">
+            Ketuk kecamatan berwarna untuk memulai
           </div>
         )}
 
+
+        {/* =========================================================
+            SELECTION PANEL
+        ========================================================== */}
+        {selectedFeature && (
+          <div
+            className="map-selection-panel"
+            key={selectedKec}
+          >
+            <button
+              className="map-selection-close"
+              onClick={() => setSelectedKec(null)}
+              aria-label="Tutup"
+            >
+              <X size={14} />
+            </button>
+
+            <div
+              className={
+                'map-selection-icon ' +
+                (isSelectedActive
+                  ? 'map-selection-icon--active'
+                  : 'map-selection-icon--locked')
+              }
+            >
+              {isSelectedActive ? (
+                <MapPin size={22} />
+              ) : (
+                <Lock size={20} />
+              )}
+            </div>
+
+            <div className="map-selection-info">
+              <div className="map-selection-name">
+                {selectedFeature.properties.kecamatan}
+              </div>
+              <div className="map-selection-status">
+                <span
+                  className={
+                    'map-selection-status-dot ' +
+                    (isSelectedActive
+                      ? 'map-selection-status-dot--active'
+                      : 'map-selection-status-dot--locked')
+                  }
+                />
+                {isSelectedActive
+                  ? `${selectedObjectCount} objek budaya`
+                  : 'Segera hadir'}
+              </div>
+            </div>
+
+            {isSelectedActive && (
+              <div className="map-selection-action">
+                <button
+                  className="map-explore-btn"
+                  onClick={() =>
+                    navigate(`/kecamatan/${selectedKec}`)
+                  }
+                >
+                  Jelajahi
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
+
       <BottomNav />
     </div>
   )
