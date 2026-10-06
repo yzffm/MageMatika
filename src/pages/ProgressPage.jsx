@@ -11,7 +11,7 @@ import './ProgressPage.css'
 
 export default function ProgressPage() {
   const navigate = useNavigate()
-  const { studentLevel, isLoggedIn, isLoading: isAuthLoading } = useStudentContext()
+  const { studentLevel, studentName, isLoggedIn, isLoading: isAuthLoading } = useStudentContext()
 
   useEffect(() => {
     if (!isAuthLoading && !isLoggedIn) {
@@ -64,7 +64,7 @@ export default function ProgressPage() {
           <div className="progress-header-icon">
             <TrendingUp size={32} />
           </div>
-          <h1 className="progress-title">Progress Kamu</h1>
+          <h1 className="progress-title">Progress {studentName || 'Kamu'}</h1>
           <p className="progress-subtitle">Jenjang {levelLabel}</p>
         </div>
 
