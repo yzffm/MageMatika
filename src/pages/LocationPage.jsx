@@ -102,50 +102,8 @@ export default function LocationPage() {
           </div>
         </div>
 
-        {/* Level-specific learning sections (optional) */}
-        {activeModule?.learningSections?.map(section => (
-          <div key={section.title} className="location-info glass-card" style={{ marginBottom: '1rem' }}>
-            <div className="info-section">
-              <h3 className="info-title">
-                <BookOpen size={16} /> {section.title}
-              </h3>
-              <p className="info-text" style={{ whiteSpace: 'pre-line' }}>{section.text}</p>
-            </div>
-          </div>
-        ))}
-
-        {/* Interactive Math Button */}
-        {activeModule?.interactiveExperience?.enabled && (
-          <button 
-            className="btn btn-secondary btn-large btn-math" 
-            onClick={() => navigate(`/math/${activeModule.id}`)}
-            style={{ marginBottom: '8px' }}
-          >
-            <Calculator size={20} />
-            Eksplorasi Matematika
-          </button>
-        )}
-
-        {/* Challenge Button */}
-        {activeModule && activeChallenge && (
-          <button 
-            className="btn btn-large btn-challenge" 
-            onClick={() => navigate(`/challenge/${activeChallenge.id}`, { state: { from: `/lokasi/${locationId}` } })}
-            style={{ marginBottom: '8px' }}
-          >
-            <Trophy size={20} />
-            Tantangan Matematika
-          </button>
-        )}
-
-        {/* Action Button */}
-        <button className="btn btn-primary btn-large btn-ar" onClick={handleStartAR} style={{ marginBottom: '1rem' }}>
-          <Camera size={20} />
-          Mulai Kamera AR
-        </button>
-
         {/* Misi Matematika - Educational Content */}
-        <div className="location-info glass-card">
+        <div className="location-info glass-card" style={{ marginBottom: '1rem' }}>
           <div className="info-section">
             <h3 className="info-title">
               <BookOpen size={16} /> Misi Matematika ({studentLevel})
@@ -173,6 +131,24 @@ export default function LocationPage() {
             </div>
           )}
         </div>
+
+        {/* Interactive Math Button */}
+        {activeModule?.interactiveExperience?.enabled && (
+          <button 
+            className="btn btn-secondary btn-large btn-math" 
+            onClick={() => navigate(`/math/${activeModule.id}`)}
+            style={{ marginBottom: '8px' }}
+          >
+            <Calculator size={20} />
+            Eksplorasi Matematika
+          </button>
+        )}
+
+        {/* Action Button */}
+        <button className="btn btn-primary btn-large btn-ar" onClick={handleStartAR} style={{ marginBottom: '1rem' }}>
+          <Camera size={20} />
+          Mulai Kamera AR
+        </button>
       </main>
       <BottomNav />
     </div>

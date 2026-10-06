@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, Info, AlertTriangle, ArrowRight, Lightbulb } from 'lucide-react'
+import { ChevronLeft, Info, AlertTriangle, ArrowRight, Lightbulb, BookOpen } from 'lucide-react'
+import visualKepuhrejo from '../../../assets/Visual Explorasi matematika-Batik kepuhrejo.jpeg'
 import './MathExperienceShell.css'
 
 /**
@@ -43,8 +44,31 @@ export default function MathExperienceShell({ culturalObject, moduleData, challe
           </div>
         </div>
 
+        {/* Learning Sections (e.g. Yuk, Hubungkan dengan Budaya!) */}
+        {moduleData.learningSections && moduleData.learningSections.map((section, idx) => (
+          <div key={idx} className="math-shell-framing glass-card" style={{ marginBottom: '1rem' }}>
+            <div className="info-section">
+              <h3 className="info-title">
+                <BookOpen size={16} /> {section.title}
+              </h3>
+              <p className="info-text" style={{ whiteSpace: 'pre-line' }}>{section.text}</p>
+              
+              {/* Injecting the specific visual for Batik Kepuhrejo as requested by the team to be less text-oriented */}
+              {culturalObject.id === 'batik-kepuhrejo' && (
+                <div style={{ marginTop: '1rem', borderRadius: '12px', overflow: 'hidden' }}>
+                  <img 
+                    src={visualKepuhrejo} 
+                    alt="Visual Eksplorasi Batik Kepuhrejo" 
+                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+
         {/* Framing Section */}
-        <div className="math-shell-framing glass-card">
+        <div className="math-shell-framing glass-card" style={{ marginBottom: '1rem' }}>
           <div className="info-section">
             <h3 className="info-title">
               <Info size={16} /> Di Mana Letak Matematikanya?
